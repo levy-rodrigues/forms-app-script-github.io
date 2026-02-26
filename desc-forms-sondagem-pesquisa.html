@@ -1,0 +1,558 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Base obrigatório do Apps Script Web App -->
+    <base target="_top" />
+
+    <!-- Responsividade: adapta layout para celular / tablet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      /* VARIÁVEIS DE TEMA (cores, sombra, radius) - muda o visual geral */
+      :root{
+        --bg:#F3F5F9;        /* cor do fundo da página */
+        --card:#FFFFFF;      /* cor do card (bloco branco) */
+        --text:#0F172A;      /* cor do texto principal */
+        --muted:#64748B;     /* cor do texto secundário (descrições) */
+        --border:#E6EAF2;    /* cor das bordas (inputs e cards) */
+        --accent:#FF4D4D;    /* cor de destaque (vermelho do "Pesquisa" e botão) */
+        --shadow: 0 18px 40px rgba(15,23,42,0.08); /* sombra do card */
+        --radius: 22px;      /* arredondamento do card principal */
+      }
+
+      /* Aplica box-sizing para facilitar cálculo de dimensões */
+      *{ box-sizing:border-box; }
+
+      body{
+        margin:0;
+        /* Fonte principal (Barlow se existir no device; senão cai no sans) */
+        font-family: ui-sans-serif, "Barlow",sans-serif, "Apple Color Emoji","Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* FUNDO COM "BLOBS" (manchas decorativas)
+         .bg = container do fundo
+         .blob.left = mancha superior esquerda
+         .blob.right = mancha inferior direita */
+      .bg{
+        min-height:100vh; /* ocupa pelo menos a altura total da tela */
+        position:relative;
+        overflow:hidden; /* evita que os blobs “vazem” e criem rolagem */
+      }
+      .blob{
+        position:absolute;
+        border-radius:999px;
+        filter: blur(0px);
+        opacity:.25;
+      }
+      .blob.left{
+        width:520px; height:520px;
+        background:#E9EDF6;
+        left:-220px; top:-120px;
+      }
+      .blob.right{
+        width:520px; height:520px;
+        background:#FFD6D6;
+        right:-260px; bottom:-240px;
+      }
+
+      /* CONTAINER PRINCIPAL CENTRALIZADO
+         .wrap limita largura e cria respiro/padding*/
+      .wrap{
+        position:relative;
+        z-index:2; /* fica acima dos blobs */
+        padding:34px 18px 44px; /* espaçamento do conteúdo */
+        max-width: 980px;       /* largura máxima do conteúdo */
+        margin: 0 auto;         /* centraliza horizontalmente */
+      }
+
+      /* "LOGO" EM TEXTO (180 / Seguros)
+         .brand = wrapper
+         .logo = texto grande "180"
+         .logo small = "Seguros" menor abaixo*/
+      .brand{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-bottom: 18px;
+      }
+      .brand .logo{
+        font-weight:900;
+        letter-spacing:-0.02em;
+        line-height:1.0;
+        font-size: 26px;
+      }
+      .brand .logo small{
+        display:block;
+        font-weight:800;
+        font-size: 16px;
+        margin-top:2px;
+      }
+
+      /* ÁREA DE TÍTULO (Sondagem / Pesquisa)
+         .hero controla espaçamento
+         .red aplica cor de destaque no "Pesquisa"*/
+      .hero{
+        margin: 18px 0 22px;
+      }
+      .hero h1{
+        margin:0;
+        font-size: 56px;
+        line-height: 1.0;
+        letter-spacing: -0.03em;
+      }
+      .hero h1 .red{ color: var(--accent); }
+      .hero p{
+        margin: 14px 0 0;
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.35;
+      }
+
+      /* ======================================================
+         NOVO LAYOUT: LOGO AO LADO DO TÍTULO
+         - .heroTop = container horizontal (logo + h1)
+         - .heroLogo = imagem do logo (tamanho grande)
+      ====================================================== */
+      .heroTop{
+        display:flex;
+        align-items:center;
+        gap: 28px;
+      }
+      .heroLogo{
+        height: 95px;   /* ajuste aqui (ex.: 80px menor / 110px maior) */
+        width:auto;
+        display:block;
+        object-fit:contain;
+      }
+
+      /* CARD PRINCIPAL DO FORMULÁRIO
+         - caixa branca com borda e sombra*/
+      .card{
+        margin-top: 22px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 26px;
+      }
+
+      /* Estilo padrão de labels dos campos */
+      label{
+        display:block;
+        font-weight: 800;
+        font-size: 14px;
+        margin: 14px 0 8px;
+        color:#1F2937;
+      }
+
+      /* Asterisco de obrigatório */
+      .req{ color: var(--accent); font-weight: 900; margin-left: 6px; }
+
+      /* Inputs e textarea padrão */
+      input[type="email"], input[type="text"], textarea{
+        width:100%;
+        padding: 14px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        outline: none;
+        font-size: 14px;
+        background:#fff;
+      }
+      input::placeholder, textarea::placeholder{ color:#94A3B8; }
+
+      /* Comentário: min-height e resize vertical (permite aumentar) */
+      textarea{
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* Texto auxiliar abaixo de campos (ex: Obrigatório.) */
+      .subhint{
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      /* TÍTULO DA PERGUNTA (itens mais importantes) */
+      .qtitle{
+        margin-top: 20px;
+        font-weight: 900;
+        color:#1F2937;
+        font-size: 14px;
+      }
+
+      /* GRID DE OPÇÕES (2 colunas)
+         - em telas pequenas vira 1 coluna (media query) */
+      .grid{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      @media (max-width: 720px){
+        .hero h1{ font-size: 42px; }
+        .grid{ grid-template-columns: 1fr; }
+
+        /* Responsivo: em telas pequenas, logo vai acima do título */
+        .heroTop{
+          flex-direction: column;
+          align-items:flex-start;
+          gap: 12px;
+        }
+        .heroLogo{
+          height: 60px;
+        }
+      }
+
+      /* CARD DE CADA OPÇÃO
+         - clicável
+         - aplica hover e "checked" visual
+         - contém checkbox REAL escondido (input opacity 0)*/
+      .optCard{
+        border: 1px solid var(--border);
+        background:#fff;
+        border-radius: 16px;
+        padding: 14px 14px;
+        display:flex;
+        align-items:center;
+        gap: 12px;
+        cursor:pointer;
+        transition: transform .04s ease, border-color .08s ease, box-shadow .08s ease;
+        user-select:none;
+      }
+      .optCard:hover{
+        border-color:#D7DDEA;
+        box-shadow: 0 10px 18px rgba(15,23,42,0.06);
+      }
+      .optCard:active{ transform: translateY(1px); }
+
+      /* Esconde o checkbox real, mantendo acessível via JS */
+      .optCard input{
+        position:absolute;
+        opacity:0;
+        pointer-events:none;
+      }
+
+      /* Bolinha visual estilo “radio” */
+      .dot{
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 2px solid #CBD5E1;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        flex: 0 0 auto;
+      }
+      /* Bolinha interna (aparece quando selecionado) */
+      .dot::after{
+        content:"";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        transform: scale(0);
+        transition: transform .08s ease;
+      }
+
+      /* Estado selecionado */
+      .optCard.checked{
+        border-color: rgba(255,77,77,.55);
+        box-shadow: 0 10px 22px rgba(255,77,77,.10);
+      }
+      .optCard.checked .dot{
+        border-color: rgba(255,77,77,.65);
+      }
+      .optCard.checked .dot::after{
+        transform: scale(1);
+      }
+
+      /* Texto da opção */
+      .optText{
+        font-weight: 700;
+        color:#334155;
+        font-size: 14px;
+      }
+
+      /* ÁREA "OUTROS" (abre quando marca a opção Outros) */
+      .outrosArea{
+        margin-top: 12px;
+        padding: 14px;
+        border: 1px dashed #E5E7EB;
+        border-radius: 16px;
+        background:#FBFCFF;
+      }
+      /* Classe utilitária para esconder/mostrar */
+      .hidden{ display:none; }
+
+      /* BOTÃO DE ENVIO */
+      .btn{
+        margin-top: 22px;
+        width:100%;
+        border:0;
+        border-radius: 16px;
+        padding: 16px;
+        font-weight: 900;
+        cursor:pointer;
+        background: var(--accent);
+        color:#fff;
+        box-shadow: 0 14px 26px rgba(255,77,77,.35);
+        display:flex;
+        justify-content:center;
+        gap:10px;
+        align-items:center;
+        font-size: 15px;
+      }
+      .btn:disabled{ opacity:.65; cursor:not-allowed; }
+
+      /* MENSAGEM DE STATUS (erro/sucesso)*/
+      .msg{
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .msg.err{ color:#B42318; }
+      .msg.ok{ color:#067647; }
+    </style>
+  </head>
+
+  <body>
+    <div class="bg">
+      <!-- Blobs decorativos -->
+      <div class="blob left"></div>
+      <div class="blob right"></div>
+
+      <div class="wrap">
+        <!-- "Logo" em texto -->
+        <!-- (Removido do topo para ficar ao lado do título "Sondagem Pesquisa") -->
+
+        <!-- Título do formulário -->
+        <div class="hero">
+          <div class="heroTop">
+            <img
+              class="heroLogo"
+              alt="180 Seguros"
+              src="data:image/png;base64,SEU_BASE64_AQUI"
+            />
+            <h1>Sondagem<br><span class="red">Pesquisa</span></h1>
+          </div>
+
+          <p>
+            Utilize o formulário abaixo para registrar suas percepções.
+          </p>
+        </div>
+
+        <!-- Card do formulário -->
+        <div class="card">
+          <!-- Campo: e-mail (obrigatório por validação no JS e no backend) -->
+          <label for="email">E-mail do respondente <span class="req">*</span></label>
+          <input id="email" type="email" placeholder="nome@exemplo.com" />
+          <div class="subhint">Obrigatório.</div>
+
+          <!-- Pergunta principal -->
+          <div class="qtitle">Quais destes itens são mais importantes para você? <span class="req">*</span></div>
+
+          <!-- Grid das opções (multi-seleção) -->
+          <div class="grid" id="grid">
+            <!-- Cada opção é um "card" clicável:
+                 - data-value define o valor que vai ser salvo na planilha
+                 - input checkbox fica invisível e é controlado via JS
+            -->
+            <div class="optCard" data-value="Atendimento / Suporte">
+              <span class="dot"></span>
+              <span class="optText">Atendimento / Suporte</span>
+              <input type="checkbox" />
+            </div>
+
+            <div class="optCard" data-value="Tempo de resposta / resolução">
+              <span class="dot"></span>
+              <span class="optText">Tempo de resposta / resolução</span>
+              <input type="checkbox" />
+            </div>
+
+            <div class="optCard" data-value="Tempo de desenvolvimento do produto">
+              <span class="dot"></span>
+              <span class="optText">Tempo de desenvolvimento do produto</span>
+              <input type="checkbox" />
+            </div>
+
+            <div class="optCard" data-value="Qualidade do produto">
+              <span class="dot"></span>
+              <span class="optText">Qualidade do produto</span>
+              <input type="checkbox" />
+            </div>
+
+            <div class="optCard" data-value="Facilidade no uso do produto">
+              <span class="dot"></span>
+              <span class="optText">Facilidade no uso do produto</span>
+              <input type="checkbox" />
+            </div>
+
+            <div class="optCard" data-value="Comunicação com os times">
+              <span class="dot"></span>
+              <span class="optText">Comunicação com os times</span>
+              <input type="checkbox" />
+            </div>
+
+            <!-- Opção Outros:
+                 - ocupa as 2 colunas via style="grid-column: 1 / -1;"
+                 - ao selecionar, abre o campo de texto "outrosTexto"
+            -->
+            <div class="optCard" data-value="Outros" id="outrosCard" style="grid-column: 1 / -1;">
+              <span class="dot"></span>
+              <span class="optText">Outros</span>
+              <input type="checkbox" />
+            </div>
+          </div>
+
+          <!-- Campo extra que aparece somente se "Outros" estiver selecionado -->
+          <div id="outrosArea" class="outrosArea hidden">
+            <label for="outrosTexto" style="margin-top:0;">Mencione os itens que considere importante <span class="req">*</span></label>
+            <input id="outrosTexto" type="text" placeholder="Descreva aqui..." />
+          </div>
+
+          <!-- Campo opcional: comentário -->
+          <label for="comentario">Deixe seu comentário</label>
+          <textarea id="comentario" placeholder="Sua mensagem (Opcional)"></textarea>
+
+          <!-- Botão envia o payload para o backend (Code.gs) -->
+          <button class="btn" id="btn" onclick="enviar()">
+            Enviar Feedback
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <!-- Aqui aparecem mensagens de erro/sucesso -->
+          <div id="msg" class="msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ======================================================
+         REFERÊNCIAS A ELEMENTOS DA TELA
+         - msg: onde mostra mensagens de status
+         - btn: botão enviar (para desabilitar durante envio)
+         - outrosArea: área escondida do campo "Outros"
+         - outrosTextoEl: input do texto de "Outros"
+         - outrosCard: card da opção "Outros" (não é usado diretamente, mas pode ser útil)
+      ====================================================== */
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("btn");
+      const outrosArea = document.getElementById("outrosArea");
+      const outrosTextoEl = document.getElementById("outrosTexto");
+      const outrosCard = document.getElementById("outrosCard");
+
+      /* ======================================================
+         CLIQUE NAS OPÇÕES
+         - Alterna checked do checkbox invisível
+         - Alterna classe .checked para efeito visual
+         - Se for "Outros", mostra/esconde a área de texto
+      ====================================================== */
+      document.querySelectorAll(".optCard").forEach(card => {
+        card.addEventListener("click", () => {
+          const input = card.querySelector("input[type='checkbox']");
+          input.checked = !input.checked;
+          card.classList.toggle("checked", input.checked);
+
+          const isOutros = card.dataset.value === "Outros";
+          if (isOutros) {
+            outrosArea.classList.toggle("hidden", !input.checked);
+            if (!input.checked) outrosTextoEl.value = "";
+          }
+        });
+      });
+
+      /* ======================================================
+         FUNÇÃO DE MENSAGEM
+         - text: texto a exibir
+         - type: "" | "err" | "ok"
+      ====================================================== */
+      function setMsg(text, type) {
+        msg.textContent = text || "";
+        msg.className = "msg " + (type || "");
+      }
+
+      /* ======================================================
+         COLETA ITENS SELECIONADOS
+         - retorna array de strings conforme data-value
+         - exemplo: ["Atendimento / Suporte", "Qualidade do produto"]
+      ====================================================== */
+      function getItensSelecionados() {
+        const itens = [];
+        document.querySelectorAll(".optCard").forEach(card => {
+          const input = card.querySelector("input[type='checkbox']");
+          if (input.checked) itens.push(card.dataset.value);
+        });
+        return itens;
+      }
+
+      /* ======================================================
+         ENVIO DO FORMULÁRIO
+         Fluxo:
+         1) desabilita botão
+         2) coleta valores
+         3) valida (e-mail obrigatório, ao menos 1 item, outrosTexto obrigatório se marcou Outros)
+         4) chama backend: google.script.run.salvarResposta(payload)
+         5) em sucesso: reseta campos e opções
+      ====================================================== */
+      function enviar() {
+        btn.disabled = true;
+
+        const email = document.getElementById("email").value.trim();
+        const itens = getItensSelecionados();
+        const outrosTexto = (outrosTextoEl.value || "").trim();
+        const comentario = document.getElementById("comentario").value.trim();
+
+        // validações
+        if (!email) {
+          setMsg("Preencha o e-mail do respondente.", "err");
+          btn.disabled = false;
+          return;
+        }
+        if (itens.length === 0) {
+          setMsg("Selecione pelo menos 1 item.", "err");
+          btn.disabled = false;
+          return;
+        }
+        if (itens.includes("Outros") && !outrosTexto) {
+          setMsg("Você marcou 'Outros'. Por favor, descreva os itens.", "err");
+          btn.disabled = false;
+          return;
+        }
+
+        setMsg("Enviando...", "");
+
+        /* Chamada ao backend (Code.gs):
+           - withSuccessHandler: o que fazer quando gravou na planilha
+           - withFailureHandler: o que fazer se der erro (ex.: permissão, aba inexistente)
+        */
+        google.script.run
+          .withSuccessHandler(() => {
+            setMsg("Enviado com sucesso!", "ok");
+
+            // reset
+            document.getElementById("email").value = "";
+            document.getElementById("comentario").value = "";
+            outrosTextoEl.value = "";
+            outrosArea.classList.add("hidden");
+
+            // desmarca tudo e remove estilos
+            document.querySelectorAll(".optCard").forEach(card => {
+              const input = card.querySelector("input[type='checkbox']");
+              input.checked = false;
+              card.classList.remove("checked");
+            });
+
+            btn.disabled = false;
+          })
+          .withFailureHandler((err) => {
+            setMsg("Erro: " + (err && err.message ? err.message : err), "err");
+            btn.disabled = false;
+          })
+          .salvarResposta({ email, itens, outrosTexto, comentario }); // payload enviado ao backend
+      }
+    </script>
+  </body>
+</html>
