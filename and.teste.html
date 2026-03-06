@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    /* ===== BASE ===== */
     body{
       font-family:"Segoe UI", Arial, sans-serif;
       background:#f2f5f9;
@@ -23,7 +22,6 @@
       border-top:6px solid #0046ad;
     }
 
-    /* ===== HEADER ===== */
     .header{
       position:relative;
       display:flex;
@@ -89,7 +87,6 @@
       font-weight:700;
     }
 
-    /* ===== CAMPOS SUPERIORES ===== */
     .form-top{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -102,7 +99,6 @@
       flex-direction:column;
     }
 
-    /* ===== VISUAL PADRÃO AZUL ===== */
     .form-group input,
     .form-group select,
     .form-group textarea,
@@ -139,7 +135,6 @@
       outline:none;
     }
 
-    /* ===== OPTCARD ===== */
     .optcard-group{
       display:flex;
       gap:15px;
@@ -170,7 +165,6 @@
       box-shadow:0 0 0 2px rgba(0,70,173,0.08) inset;
     }
 
-    /* ===== RADIO PRINCIPAL ===== */
     .radio-group{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -217,7 +211,6 @@
       font-weight:600;
     }
 
-    /* ===== SUBGRUPO ===== */
     .subgrupo{
       margin-top:18px;
       padding:18px;
@@ -245,7 +238,6 @@
       font-size:14px;
     }
 
-    /* ===== GRID CONTRATO / PADRÃO EXPANDIDO ===== */
     .inline-contrato{
       display:grid;
       grid-template-columns:1fr 2fr;
@@ -268,7 +260,6 @@
       }
     }
 
-    /* ===== ALERTAS ===== */
     .alert{
       background:#fff2f2;
       padding:14px;
@@ -298,7 +289,6 @@
       line-height:1.6;
     }
 
-    /* ===== TEXTAREA ===== */
     textarea{
       width:100%;
       min-height:90px;
@@ -307,7 +297,6 @@
       resize:vertical;
     }
 
-    /* ===== UPLOAD ===== */
     .upload-wrapper{
       display:flex;
       align-items:center;
@@ -342,7 +331,6 @@
       display:none;
     }
 
-    /* ===== BOTÃO ===== */
     .botao-container{
       text-align:center;
       margin-top:30px;
@@ -487,7 +475,6 @@
   </div>
 
   <script>
-    /* Cole aqui sua logo em base64, se quiser */
     const LOGO_DATA_URL = "";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -578,8 +565,7 @@
       }
 
       if(tipoCodigo === "PJ"){
-        const descricaoPJ = textoLimpo(document.getElementById("descricaoPJ")?.value || "");
-        return descricaoPJ;
+        return textoLimpo(document.getElementById("descricaoPJ")?.value || "");
       }
 
       if(tipoCodigo === "Escala"){
@@ -771,14 +757,19 @@
           const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
           const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
           const suspeita = textoLimpo(document.getElementById("atestadoSuspeita")?.value || "");
-          const arquivo = document.getElementById("arquivoAtestado1");
+          const arquivoAtestado = document.getElementById("arquivoAtestado1");
+          const arquivoRetorno = document.getElementById("arquivoAtestado2");
 
           if(!regime || !matricula || !nomeColaborador || !cliente || !suspeita){
             throw new Error("Preencha todos os campos obrigatórios de Atestado.");
           }
 
-          if(!arquivo || !arquivo.files || arquivo.files.length === 0){
-            throw new Error("Anexe a documentação suporte.");
+          if(!arquivoAtestado || !arquivoAtestado.files || arquivoAtestado.files.length === 0){
+            throw new Error("Anexe o atestado/documento.");
+          }
+
+          if(!arquivoRetorno || !arquivoRetorno.files || arquivoRetorno.files.length === 0){
+            throw new Error("Anexe o retorno da Unidade de Saúde.");
           }
         }
 
@@ -934,11 +925,18 @@
           <label for="atestadoSuspeita">Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
           <textarea id="atestadoSuspeita" required></textarea>
 
-          <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
+          <label>Anexar atestado/documento <span class="obrigatorio">*</span></label>
           <div class="upload-wrapper">
             <label for="arquivoAtestado1" class="upload-button">Selecionar arquivo</label>
             <span id="upload-nome-atestado1" class="upload-nome">Nenhum arquivo selecionado</span>
             <input type="file" id="arquivoAtestado1" onchange="mostrarNomeArquivos(this,'upload-nome-atestado1')">
+          </div>
+
+          <label>Anexar retorno da Unidade de Saúde <span class="obrigatorio">*</span></label>
+          <div class="upload-wrapper">
+            <label for="arquivoAtestado2" class="upload-button">Selecionar arquivo</label>
+            <span id="upload-nome-atestado2" class="upload-nome">Nenhum arquivo selecionado</span>
+            <input type="file" id="arquivoAtestado2" onchange="mostrarNomeArquivos(this,'upload-nome-atestado2')">
           </div>
         </div>
       `;
