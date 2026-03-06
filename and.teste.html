@@ -283,6 +283,11 @@
       color:#b42318;
     }
 
+    .alert-black-strong{
+      font-weight:700;
+      color:#000000;
+    }
+
     .info{
       background:#eef5ff;
       padding:12px;
@@ -482,6 +487,7 @@
   </div>
 
   <script>
+    /* Cole aqui sua logo em base64, se quiser */
     const LOGO_DATA_URL = "";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -534,7 +540,7 @@
         ].filter(Boolean).join("\n");
       }
 
-      if(["ContratoTrabalho","Banco","Atestado","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
+      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento"].includes(tipoCodigo)){
         const regime = textoLimpo(document.querySelector('input[name="regimeContrato"]:checked')?.value || "");
         const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
         const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
@@ -550,6 +556,30 @@
           cliente ? `Cliente: ${cliente}` : "",
           descricao ? `Descrição: ${descricao}` : ""
         ].filter(Boolean).join("\n");
+      }
+
+      if(tipoCodigo === "Atestado"){
+        const verificacaoSelecionada = document.querySelector("#verificacaoAtestado .optcard.selected");
+        const resposta = verificacaoSelecionada ? verificacaoSelecionada.getAttribute("data-value") : "";
+        const suspeita = textoLimpo(document.getElementById("atestadoSuspeita")?.value || "");
+        const regime = textoLimpo(document.querySelector('input[name="regimeContrato"]:checked')?.value || "");
+        const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
+        const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
+        const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
+
+        return [
+          resposta ? `Verificação: ${resposta}` : "",
+          regime ? `Regime: ${regime}` : "",
+          matricula ? `Matrícula: ${matricula}` : "",
+          nomeColaborador ? `Nome Colaborador: ${nomeColaborador}` : "",
+          cliente ? `Cliente: ${cliente}` : "",
+          suspeita ? `Suspeita: ${suspeita}` : ""
+        ].filter(Boolean).join("\n");
+      }
+
+      if(tipoCodigo === "PJ"){
+        const descricaoPJ = textoLimpo(document.getElementById("descricaoPJ")?.value || "");
+        return descricaoPJ;
       }
 
       if(tipoCodigo === "Escala"){
@@ -581,137 +611,6 @@
 
       if(!visible){
         txt.setCustomValidity("");
-      }
-    }
-
-    function validarCamposPadraoExpandido(){
-      const regime = document.querySelector('input[name="regimeContrato"]:checked');
-      const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
-      const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
-      const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
-      const descricao = textoLimpo(document.getElementById("descricaoContrato")?.value || "");
-
-      if(!regime || !matricula || !nomeColaborador || !cliente || !descricao){
-        throw new Error("Preencha todos os campos obrigatórios.");
-      }
-    }
-
-    function validarFormularioBasico(categoriaCodigo, tipoCodigo){
-      const email = document.getElementById("email");
-      const solicitante = document.getElementById("solicitante");
-      const departamento = document.getElementById("departamento");
-      const gestor = document.getElementById("gestor");
-
-      if(
-        !textoLimpo(email.value) ||
-        !textoLimpo(solicitante.value) ||
-        !textoLimpo(departamento.value) ||
-        !textoLimpo(gestor.value)
-      ){
-        throw new Error("Preencha todos os campos obrigatórios do topo.");
-      }
-
-      if(!categoriaCodigo){
-        throw new Error("Selecione uma categoria (Consulta Trabalhista/Contratos/EHS).");
-      }
-
-      if(categoriaCodigo === "Consulta" && !tipoCodigo){
-        throw new Error("Selecione o tipo de Dúvida/Ocorrência.");
-      }
-
-      if(categoriaCodigo !== "Consulta"){
-        throw new Error("Esta categoria estará disponível em breve.");
-      }
-
-      if(tipoCodigo === "Assedio"){
-        return;
-      }
-
-      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
-        validarCamposPadraoExpandido();
-        return;
-      }
-
-      if(tipoCodigo === "Atestado"){
-        const verificacaoSelecionada = document.querySelector("#verificacaoAtestado .optcard.selected");
-        if(!verificacaoSelecionada){
-          throw new Error("Selecione se foi realizada a verificação do atestado junto à unidade de saúde.");
-        }
-
-        const resposta = verificacaoSelecionada.getAttribute("data-value");
-
-        validarCamposPadraoExpandido();
-
-        if(resposta === "Sim"){
-          const suspeita = textoLimpo(document.getElementById("atestadoSuspeita")?.value || "");
-          const arquivo1 = document.getElementById("arquivoAtestado1");
-          const arquivo2 = document.getElementById("arquivoAtestado2");
-
-          if(!suspeita){
-            throw new Error("Preencha a suspeita do atestado.");
-          }
-
-          if(!arquivo1 || !arquivo1.files || arquivo1.files.length === 0){
-            throw new Error("Anexe a documentação suporte do atestado.");
-          }
-
-          if(!arquivo2 || !arquivo2.files || arquivo2.files.length === 0){
-            throw new Error("Anexe a documentação suporte do retorno da unidade de saúde.");
-          }
-        }
-
-        return;
-      }
-
-      if(tipoCodigo === "Escala"){
-        const subtipo = document.querySelector('input[name="subtipo"]:checked');
-        const descricaoEscala = textoLimpo(document.getElementById("descricaoEscala")?.value || "");
-        const arquivoEscala = document.getElementById("arquivoEscala");
-
-        if(!subtipo){
-          throw new Error("Selecione o tipo de escala.");
-        }
-
-        if(!descricaoEscala){
-          throw new Error("Preencha a descrição da escala.");
-        }
-
-        if(!arquivoEscala || !arquivoEscala.files || arquivoEscala.files.length === 0){
-          throw new Error("Anexe a documentação suporte.");
-        }
-
-        return;
-      }
-
-      if(tipoCodigo === "Faltas"){
-        const faltasDias = textoLimpo(document.getElementById("faltasDias")?.value || "");
-        const faltasTelegrama = textoLimpo(document.getElementById("faltasTelegrama")?.value || "");
-
-        if(!faltasDias || !faltasTelegrama){
-          throw new Error("Preencha todos os campos obrigatórios de Faltas Injustificadas.");
-        }
-
-        return;
-      }
-
-      if(tipoCodigo === "Roubo"){
-        const descricaoRoubo = textoLimpo(document.getElementById("descricaoRoubo")?.value || "");
-        const arquivoRoubo = document.getElementById("arquivoRoubo");
-
-        if(!descricaoRoubo){
-          throw new Error("Preencha a descrição do ocorrido.");
-        }
-
-        if(!arquivoRoubo || !arquivoRoubo.files || arquivoRoubo.files.length === 0){
-          throw new Error("Anexe a documentação suporte.");
-        }
-
-        return;
-      }
-
-      const desc = getDescricao(tipoCodigo);
-      if(!desc){
-        throw new Error("Preencha a descrição do seu caso antes de enviar.");
       }
     }
 
@@ -788,6 +687,164 @@
       return anexos;
     }
 
+    function validarCamposPadraoExpandido(exigirAnexo = false, inputArquivoId = "arquivoContratoTrabalho"){
+      const regime = document.querySelector('input[name="regimeContrato"]:checked');
+      const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
+      const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
+      const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
+      const descricao = textoLimpo(document.getElementById("descricaoContrato")?.value || "");
+
+      if(!regime || !matricula || !nomeColaborador || !cliente || !descricao){
+        throw new Error("Preencha todos os campos obrigatórios.");
+      }
+
+      if(exigirAnexo){
+        const arquivo = document.getElementById(inputArquivoId);
+        if(!arquivo || !arquivo.files || arquivo.files.length === 0){
+          throw new Error("Anexe a documentação suporte.");
+        }
+      }
+    }
+
+    function validarFormularioBasico(categoriaCodigo, tipoCodigo){
+      const email = document.getElementById("email");
+      const solicitante = document.getElementById("solicitante");
+      const departamento = document.getElementById("departamento");
+      const gestor = document.getElementById("gestor");
+
+      if(
+        !textoLimpo(email.value) ||
+        !textoLimpo(solicitante.value) ||
+        !textoLimpo(departamento.value) ||
+        !textoLimpo(gestor.value)
+      ){
+        throw new Error("Preencha todos os campos obrigatórios do topo.");
+      }
+
+      if(!categoriaCodigo){
+        throw new Error("Selecione uma categoria (Consulta Trabalhista/Contratos/EHS).");
+      }
+
+      if(categoriaCodigo === "Consulta" && !tipoCodigo){
+        throw new Error("Selecione o tipo de Dúvida/Ocorrência.");
+      }
+
+      if(categoriaCodigo !== "Consulta"){
+        throw new Error("Esta categoria estará disponível em breve.");
+      }
+
+      if(tipoCodigo === "Assedio"){
+        return;
+      }
+
+      if(tipoCodigo === "Banco"){
+        const subtipo = document.querySelector('input[name="subtipo"]:checked');
+        if(!subtipo){
+          throw new Error("Selecione o assunto de Banco de Horas.");
+        }
+        validarCamposPadraoExpandido(true, "arquivoContratoTrabalho");
+        return;
+      }
+
+      if(["ContratoTrabalho","Beneficios","Estabilidade","Cancelamento"].includes(tipoCodigo)){
+        if(tipoCodigo === "Estabilidade"){
+          const subtipo = document.querySelector('input[name="subtipo"]:checked');
+          if(!subtipo){
+            throw new Error("Selecione o subtipo de Estabilidade.");
+          }
+        }
+        validarCamposPadraoExpandido(false, "arquivoContratoTrabalho");
+        return;
+      }
+
+      if(tipoCodigo === "Atestado"){
+        const verificacaoSelecionada = document.querySelector("#verificacaoAtestado .optcard.selected");
+        if(!verificacaoSelecionada){
+          throw new Error("Selecione se foi realizada a verificação do atestado junto à unidade de saúde.");
+        }
+
+        const resposta = verificacaoSelecionada.getAttribute("data-value");
+
+        if(resposta === "Sim"){
+          const regime = document.querySelector('input[name="regimeContrato"]:checked');
+          const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
+          const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
+          const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
+          const suspeita = textoLimpo(document.getElementById("atestadoSuspeita")?.value || "");
+          const arquivo = document.getElementById("arquivoAtestado1");
+
+          if(!regime || !matricula || !nomeColaborador || !cliente || !suspeita){
+            throw new Error("Preencha todos os campos obrigatórios de Atestado.");
+          }
+
+          if(!arquivo || !arquivo.files || arquivo.files.length === 0){
+            throw new Error("Anexe a documentação suporte.");
+          }
+        }
+
+        return;
+      }
+
+      if(tipoCodigo === "PJ"){
+        const descricaoPJ = textoLimpo(document.getElementById("descricaoPJ")?.value || "");
+        if(!descricaoPJ){
+          throw new Error("Preencha a descrição da Contratação Modalidade PJ.");
+        }
+        return;
+      }
+
+      if(tipoCodigo === "Escala"){
+        const subtipo = document.querySelector('input[name="subtipo"]:checked');
+        const descricaoEscala = textoLimpo(document.getElementById("descricaoEscala")?.value || "");
+        const arquivoEscala = document.getElementById("arquivoEscala");
+
+        if(!subtipo){
+          throw new Error("Selecione o tipo de escala.");
+        }
+
+        if(!descricaoEscala){
+          throw new Error("Preencha a descrição da escala.");
+        }
+
+        if(!arquivoEscala || !arquivoEscala.files || arquivoEscala.files.length === 0){
+          throw new Error("Anexe a documentação suporte.");
+        }
+
+        return;
+      }
+
+      if(tipoCodigo === "Faltas"){
+        const faltasDias = textoLimpo(document.getElementById("faltasDias")?.value || "");
+        const faltasTelegrama = textoLimpo(document.getElementById("faltasTelegrama")?.value || "");
+
+        if(!faltasDias || !faltasTelegrama){
+          throw new Error("Preencha todos os campos obrigatórios de Faltas Injustificadas.");
+        }
+
+        return;
+      }
+
+      if(tipoCodigo === "Roubo"){
+        const descricaoRoubo = textoLimpo(document.getElementById("descricaoRoubo")?.value || "");
+        const arquivoRoubo = document.getElementById("arquivoRoubo");
+
+        if(!descricaoRoubo){
+          throw new Error("Preencha a descrição do ocorrido.");
+        }
+
+        if(!arquivoRoubo || !arquivoRoubo.files || arquivoRoubo.files.length === 0){
+          throw new Error("Anexe a documentação suporte.");
+        }
+
+        return;
+      }
+
+      const desc = getDescricao(tipoCodigo);
+      if(!desc){
+        throw new Error("Preencha a descrição do seu caso antes de enviar.");
+      }
+    }
+
     function criarBlocoPadraoExpandido(titulo, incluirSubtipo){
       return `
         <div class="subgrupo">
@@ -840,6 +897,53 @@
       `;
     }
 
+    function criarBlocoAtestadoSim(){
+      return `
+        <div class="subgrupo">
+          <strong>Dados do colaborador</strong>
+
+          <label>Selecione o regime <span class="obrigatorio">*</span></label>
+          <div class="optcard-group" id="regimeContratoGrupo">
+            <label class="optcard">
+              <input type="radio" name="regimeContrato" value="CLT" style="display:none;">
+              CLT
+            </label>
+            <label class="optcard">
+              <input type="radio" name="regimeContrato" value="TT" style="display:none;">
+              TT
+            </label>
+          </div>
+
+          <div class="inline-contrato">
+            <div class="form-group">
+              <label for="matriculaContrato">Matrícula <span class="obrigatorio">*</span></label>
+              <input id="matriculaContrato" type="text" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nomeColaboradorContrato">Nome Colaborador <span class="obrigatorio">*</span></label>
+              <input id="nomeColaboradorContrato" type="text" required>
+            </div>
+
+            <div class="form-group linha-cheia">
+              <label for="clienteContrato">Cliente <span class="obrigatorio">*</span></label>
+              <input id="clienteContrato" type="text" required>
+            </div>
+          </div>
+
+          <label for="atestadoSuspeita">Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
+          <textarea id="atestadoSuspeita" required></textarea>
+
+          <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
+          <div class="upload-wrapper">
+            <label for="arquivoAtestado1" class="upload-button">Selecionar arquivo</label>
+            <span id="upload-nome-atestado1" class="upload-nome">Nenhum arquivo selecionado</span>
+            <input type="file" id="arquivoAtestado1" onchange="mostrarNomeArquivos(this,'upload-nome-atestado1')">
+          </div>
+        </div>
+      `;
+    }
+
     function preencherSubtipos(lista){
       const container = document.getElementById("subtipoContainer");
       if(!container) return;
@@ -852,6 +956,18 @@
         r.addEventListener("change", () => {
           document.querySelectorAll('#subtipoContainer .radio-item').forEach(x => x.classList.remove("selected"));
           r.parentElement.classList.add("selected");
+        });
+      });
+    }
+
+    function ativarSelecaoRegime(){
+      const cards = document.querySelectorAll("#regimeContratoGrupo .optcard");
+      cards.forEach(card => {
+        card.addEventListener("click", function(){
+          cards.forEach(c => c.classList.remove("selected"));
+          this.classList.add("selected");
+          const radio = this.querySelector('input[type="radio"]');
+          if(radio) radio.checked = true;
         });
       });
     }
@@ -959,7 +1075,21 @@
       }
 
       if(tipoCodigo === "PJ"){
-        html = criarBlocoPadraoExpandido("Contratação Modalidade PJ", false);
+        html = `
+          <div class="subgrupo">
+            <strong>Contratação Modalidade PJ</strong>
+
+            <label for="descricaoPJ">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+            <textarea id="descricaoPJ" required></textarea>
+
+            <label>Anexar documentação suporte</label>
+            <div class="upload-wrapper">
+              <label for="arquivoPJ" class="upload-button">Selecionar arquivos</label>
+              <span id="upload-nome-pj" class="upload-nome">Nenhum arquivo selecionado</span>
+              <input type="file" id="arquivoPJ" multiple onchange="mostrarNomeArquivos(this,'upload-nome-pj')">
+            </div>
+          </div>
+        `;
       }
 
       if(tipoCodigo === "Escala"){
@@ -1031,7 +1161,7 @@
         html = `
           <div class="subgrupo">
             <div class="alert">
-              <strong><span style="color:#d93025;">Atenção!</span> Evite selecionar "Outros" incorretamente.</strong><br><br>
+              <span class="alert-black-strong">Atenção! Evite selecionar "Outros" incorretamente.</span><br><br>
               Se o tema já existir na lista, sua solicitação poderá ser invalidada.
             </div>
 
@@ -1057,16 +1187,8 @@
         });
       });
 
-      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
-        const cards = document.querySelectorAll("#regimeContratoGrupo .optcard");
-        cards.forEach(card => {
-          card.addEventListener("click", function(){
-            cards.forEach(c => c.classList.remove("selected"));
-            this.classList.add("selected");
-            const radio = this.querySelector('input[type="radio"]');
-            if(radio) radio.checked = true;
-          });
-        });
+      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento"].includes(tipoCodigo)){
+        ativarSelecaoRegime();
       }
 
       if(tipoCodigo === "Banco"){
@@ -1097,44 +1219,14 @@
           card.addEventListener("click", function() {
             optcardsAtestado.forEach(c => c.classList.remove("selected"));
             this.classList.add("selected");
-            containerExtras.innerHTML = `
-              ${criarBlocoPadraoExpandido("Dados do colaborador", false)}
-              <div id="atestadoDetalhes"></div>
-            `;
 
-            const cards = document.querySelectorAll("#regimeContratoGrupo .optcard");
-            cards.forEach(opt => {
-              opt.addEventListener("click", function(){
-                cards.forEach(c => c.classList.remove("selected"));
-                this.classList.add("selected");
-                const radio = this.querySelector('input[type="radio"]');
-                if(radio) radio.checked = true;
-              });
-            });
+            const resposta = this.getAttribute("data-value");
 
-            const detalhes = document.getElementById("atestadoDetalhes");
-
-            if(this.getAttribute("data-value") === "Sim"){
-              detalhes.innerHTML = `
-                <label for="atestadoSuspeita">Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
-                <textarea id="atestadoSuspeita" required></textarea>
-
-                <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
-                <div class="upload-wrapper">
-                  <label for="arquivoAtestado1" class="upload-button">Selecionar arquivo</label>
-                  <span id="upload-nome-atestado1" class="upload-nome">Nenhum arquivo selecionado</span>
-                  <input type="file" id="arquivoAtestado1" onchange="mostrarNomeArquivos(this,'upload-nome-atestado1')">
-                </div>
-
-                <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
-                <div class="upload-wrapper">
-                  <label for="arquivoAtestado2" class="upload-button">Selecionar arquivo</label>
-                  <span id="upload-nome-atestado2" class="upload-nome">Nenhum arquivo selecionado</span>
-                  <input type="file" id="arquivoAtestado2" onchange="mostrarNomeArquivos(this,'upload-nome-atestado2')">
-                </div>
-              `;
+            if(resposta === "Sim"){
+              containerExtras.innerHTML = criarBlocoAtestadoSim();
+              ativarSelecaoRegime();
             } else {
-              detalhes.innerHTML = `
+              containerExtras.innerHTML = `
                 <div class="alert">
                   Recomendamos validar o atestado junto à unidade de saúde.
                 </div>
