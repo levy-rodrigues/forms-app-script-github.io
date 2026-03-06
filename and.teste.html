@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+/* ===== BASE ===== */
+body{
+  font-family:"Segoe UI", Arial, sans-serif;
+  background:#f2f5f9;
+  padding:30px;
+  color:#1a1a1a;
+}
+
+.container{
+  background:white;
+  padding:40px;
+  border-radius:14px;
+  max-width:900px;
+  margin:auto;
+  box-shadow:0 15px 40px rgba(0,0,0,0.08);
+  border-top:6px solid #0046ad;
+}
+
+/* ✅ HEADER: logo à esquerda + TÍTULO CENTRALIZADO (somente o texto centralizado) */
+.header{
+  position:relative;
+  display:flex;
+  align-items:center;
+  margin-bottom:10px;
+  min-height:84px; /* garante altura compatível com o logo */
+}
+
+/* Logo fica à esquerda */
+.header img{
+  height:84px;
+  width:auto;
+  object-fit:contain;
+  display:block;
+}
+
+/* ✅ Apenas o texto do título centralizado */
+.header h2{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  color:#0046ad;
+  margin:0;
+  font-weight:700;
+  font-size:22px;
+  line-height:1.2;
+  text-align:center;
+  width:70%; /* evita estourar quando o logo é grande */
+}
+
+/* Responsivo: em telas menores, título volta ao fluxo normal */
+@media (max-width: 600px){
+  .header{
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    min-height:unset;
+  }
+  .header h2{
+    position:static;
+    transform:none;
+    width:100%;
+  }
+}
+
+p.description-text {
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:30px;
+}
+
+/* ✅ MAIS ESPAÇO ENTRE CAMPOS */
+label{
+  display:block;
+  margin-top:14px;
+  margin-bottom:6px;
+  line-height:1.35;
+}
+.field-block{ margin-top:12px; }
+
+/* ===== CAMPOS SUPERIORES ===== */
+.form-top{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px 30px;
+  margin-bottom:30px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding:10px;
+  font-size:14px;
+  border:1px solid #ccd6e0;
+  border-radius:8px;
+  background:white;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group select:hover,
+.form-group select:focus {
+  border-color: #0046ad;
+  box-shadow: 0 0 6px rgba(0, 70, 173, 0.4);
+  outline: none;
+}
+
+.obrigatorio{
+  color:#d93025;
+  font-weight:700;
+}
+
+/* ===== OPTCARD ===== */
+.optcard-group{
+  display:flex;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.optcard{
+  flex:1;
+  padding:12px;
+  border:1.5px solid #ccd6e0;
+  border-radius:8px;
+  text-align:center;
+  cursor:pointer;
+  font-weight:600;
+  background:white;
+  transition:0.2s;
+}
+
+.optcard.selected{
+  border-color:#0046ad;
+  background:#eaf1ff;
+}
+
+/* ===== RADIO PRINCIPAL ===== */
+.radio-group{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:15px;
+  margin-bottom:25px;
+}
+
+.radio-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  border:1.6px solid #d9e2ec;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+  background:white;
+  font-size:14px;
+}
+
+.radio-item:hover{
+  border-color:#0046ad;
+  background:#f0f5ff;
+}
+
+.radio-item input{
+  appearance:none;
+  width:16px;
+  height:16px;
+  border:2px solid #0046ad;
+  border-radius:50%;
+}
+
+.radio-item input:checked{
+  background:#0046ad;
+}
+
+.radio-item.selected{
+  border-color:#0046ad;
+  background:#eaf1ff;
+  font-weight:600;
+}
+
+/* ===== SUBGRUPO ===== */
+.subgrupo{
+  margin-top:18px;
+  padding:18px;
+  background:#f7faff;
+  border-radius:8px;
+  border:1px solid #e3ecf5;
+  animation:fadeIn 0.3s ease-in-out;
+}
+
+.subgrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 15px;
+}
+
+.subgrid .radio-item{
+  padding:8px;
+  font-size:13px;
+}
+
+.subgrupo strong{
+  color:#0046ad;
+  display:block;
+  margin-bottom:10px;
+  font-size:14px;
+}
+
+/* ===== ALERTAS ===== */
+.alert{
+  background:#fff2f2;
+  padding:12px;
+  border-left:4px solid #d93025;
+  border-radius:6px;
+  font-size:14px;
+  margin-top:12px;
+}
+
+.info{
+  background:#eef5ff;
+  padding:12px;
+  border-left:4px solid #0046ad;
+  border-radius:6px;
+  font-size:14px;
+  margin-top:12px;
+}
+
+/* ===== TEXTAREA ===== */
+textarea{
+  width:100%;
+  padding:10px;
+  font-size:14px;
+  border:1px solid #ccd6e0;
+  border-radius:8px;
+  min-height:90px;
+  max-height:180px;
+  margin-top:6px;
+  resize:vertical;
+  box-sizing:border-box;
+}
+
+/* ===== UPLOAD ===== */
+.upload-wrapper{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.upload-button{
+  background:#ffffff;
+  border:2px solid #0046ad;
+  color:#0046ad;
+  padding:6px 16px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.upload-button:hover{
+  background:#0046ad;
+  color:white;
+}
+
+.upload-nome{
+  font-size:13px;
+  color:#555;
+}
+
+input[type="file"]{ display:none; }
+
+/* ===== BOTÃO ===== */
+.botao-container{
+  text-align:center;
+  margin-top:30px;
+  display:none;
+}
+
+button{
+  background:#0046ad;
+  color:white;
+  border:none;
+  padding:10px 28px;
+  font-size:14px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.2s;
+}
+
+button:hover{ background:#00337d; }
+button:disabled{ opacity:0.65; cursor:not-allowed; }
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(-5px);}
+  to{opacity:1;transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- ✅ Logo à esquerda + título centralizado -->
+  <div class="header">
+    <img id="logoEmpresa" alt="Logo da empresa">
+    <h2>Canal Interno – Dúvidas / Ocorrências</h2>
+  </div>
+
+  <p class="description-text">
+    Este sistema é para a realização de consultas e dúvidas dos times internos da Randstad, referentes a
+    <strong>Consultas Trabalhistas</strong>, <strong>Contratos</strong> e <strong>EHS</strong>.
+    Deixe aqui sua dúvida e será respondida em até <strong>48hrs úteis.</strong>
+  </p>
+
+  <form id="form" novalidate>
+    <div class="form-top">
+      <div class="form-group">
+        <label for="email">Email <span class="obrigatorio">*</span></label>
+        <input id="email" name="email" type="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="solicitante">Solicitante <span class="obrigatorio">*</span></label>
+        <input id="solicitante" name="solicitante" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="departamento">Diretoria/Departamento <span class="obrigatorio">*</span></label>
+        <select id="departamento" name="departamento" required>
+          <option value="">Selecione</option>
+          <option>Finanças</option>
+          <option>Grandes Contas</option>
+          <option>Marketing</option>
+          <option>Randstad Operational</option>
+          <option>Randstad Digital</option>
+          <option>Randstad Enterprise</option>
+          <option>Randstad Professional</option>
+          <option>RH Interno</option>
+          <option>TI</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="gestor">Gestor Direto <span class="obrigatorio">*</span></label>
+        <input id="gestor" name="gestor" type="text" required>
+      </div>
+    </div>
+
+    <!-- OPTCARDS -->
+    <div class="optcard-group">
+      <div class="optcard" data-codigo="Consulta">Consulta Trabalhista</div>
+      <div class="optcard" data-codigo="Contratos">Contratos</div>
+      <div class="optcard" data-codigo="EHS">EHS</div>
+    </div>
+
+    <!-- Área dinâmica: só para Consulta -->
+    <div id="consultaCampos" style="display:none;">
+      <div class="field-block">
+        <label>Selecione o tipo de Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+        <div class="radio-group" id="radioTipo">
+          <label class="radio-item"><input type="radio" name="tipo" value="Assedio"> Assédio (Moral ou Sexual)</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Atestado"> Atestado</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Banco"> Banco de Horas</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Beneficios"> Benefícios / Salários</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Cancelamento"> Cancelamento de Admissão</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="PJ"> Contratação Modalidade PJ</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Escala"> Criação / Alteração de Escala</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Estabilidade"> Estabilidade</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Faltas"> Faltas Injustificadas</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Roubo"> Roubo / Furto</label>
+          <label class="radio-item"><input type="radio" name="tipo" value="Outros"> Outros</label>
+          </div>
+      </div>
+
+      <div id="subcampos"></div>
+
+      <!-- Campos finais padrão -->
+      <div id="camposFinais" style="display:none;">
+        <label for="descricao">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+        <textarea id="descricao"></textarea>
+
+        <label>Anexos</label>
+        <div class="upload-wrapper">
+          <label for="arquivoGeral" class="upload-button">Selecionar arquivos</label>
+          <span id="upload-nome-geral" class="upload-nome">Nenhum arquivo selecionado</span>
+          <input type="file" id="arquivoGeral" multiple onchange="mostrarNomeArquivos(this,'upload-nome-geral')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão -->
+    <div class="botao-container" id="botaoEnviar">
+      <button id="btnSubmit" type="submit">Enviar</button>
+      <div id="statusEnvio" style="margin-top:12px; font-size:13px; color:#555; display:none;">Enviando...</div>
+    </div>
+  </form>
+
+  <!-- Página de sucesso (sem botão) -->
+  <div id="pagina-sucesso" style="display:none; text-align:center; padding:60px 20px; background:#f2f5f9; min-height:300px;">
+    <div style="display:inline-block; background:#eaf1ff; border:1px solid #0046ad; border-radius:12px; padding:40px 30px; max-width:520px;">
+      <h2 style="color:#0046ad; margin-bottom:20px;">Solicitação Enviada!</h2>
+      <p style="font-size:16px; color:#1a1a1a; line-height:1.6;">
+        <strong>Sua solicitação foi enviada com sucesso!</strong><br>
+        Nossa equipe analisará sua demanda e você receberá uma resposta dentro de <strong>48 horas úteis</strong>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ✅ LOGO BASE64 (DATA URL)
+   Cole assim:
+   const LOGO_DATA_URL = "data:image/png;base64,iVBORw0K...";
+   ========================================================= */
+const LOGO_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAOKCAMAAAC8uVm4AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAKJQTFRF////q8vwIXXZ8fb85O76ocXv2uj5msDuTpHhx9z13+v5lb3tj7nsRozf1eX4Qorf/f3+z+H3ibbrP4fey9/2grHqO4Xd+fz+s8/ypMbvttLy6PD7f6/pcqfneqzodannp8jwwdj09Pj9r83xudTz7vX8UpThJnjaK3vb9/r9ZZ/kXpvkOIPdWpnjaqPmnsLuSY7g6/P7Ln3bNIDcxdv1V5fiP9CmZQAAAAFiS0dEAIgFHUgAAAAJcEhZcwAAAEgAAABIAEbJaz4AADFOSURBVHja7d1nQxPZAofxQToECB2pgoSliUHd7/8BrgqilCUISpNOqKFzX3h3r5IzyZnJJJl/9vm9uXdj2hySJ9PnmQMAIp4xBABUECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQL/xplzwzKGZdiDb2fJyJYAGQQLAAyCBYAGQQLgAyCBUAG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ABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADIIFgAZBAuADIIFQAbBAiCDYAGQQbAAyCBYAGQQLAAyCBYAGQQLgAyCBUAGwQIgg2ABkEGwAMggWABkECwAMggWABkEC4AMggVABsECIINgAZBBsADIIFgAZBAsADL+C8hfxNjHtaDcAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIxLTA5LTAxVDEzOjQ4OjIzLTAzOjAwX3XhowAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMS0wOS0wMVQxMzo0ODoyMy0wMzowMC4oWR8AAAAASUVORK5CYII="; // <-- COLE AQUI
+
+document.addEventListener("DOMContentLoaded", () => {
+  const img = document.getElementById("logoEmpresa");
+  if (img && LOGO_DATA_URL && LOGO_DATA_URL.startsWith("data:image/")) {
+    img.src = LOGO_DATA_URL;
+  } else {
+    if(img) img.style.display = "none";
+  }
+});
+
+// =========================
+// ✅ HELPERS
+// =========================
+function textoLimpo(s){ return String(s || "").replace(/\s+/g, " ").trim(); }
+
+function getCategoriaCodigo(){
+  return document.querySelector(".optcard.selected")?.dataset?.codigo || "";
+}
+function getCategoriaNome(){
+  const el = document.querySelector(".optcard.selected");
+  return el ? textoLimpo(el.textContent) : "";
+}
+function getTipoCodigo(){
+  return document.querySelector('input[name="tipo"]:checked')?.value || "";
+}
+function getTipoNome(){
+  const el = document.querySelector('input[name="tipo"]:checked');
+  return el ? textoLimpo(el.parentElement?.textContent || "") : "";
+}
+function getSubtipoNome(){
+  const el = document.querySelector('input[name="subtipo"]:checked');
+  return el ? textoLimpo(el.parentElement?.textContent || "") : "";
+}
+
+function getDescricao(tipoCodigo){
+  if(tipoCodigo === "Faltas"){
+    const d1 = textoLimpo(document.getElementById("faltasDias")?.value || "");
+    const d2 = textoLimpo(document.getElementById("faltasTelegrama")?.value || "");
+    return [
+      d1 ? `Dias consecutivos: ${d1}` : "",
+      d2 ? `Telegrama/tentativas: ${d2}` : ""
+    ].filter(Boolean).join("\n");
+  }
+
+  const tSub = document.querySelector("#subcampos textarea");
+  if(tSub && textoLimpo(tSub.value)) return textoLimpo(tSub.value);
+
+  const tPadrao = document.getElementById("descricao");
+  if(tPadrao && textoLimpo(tPadrao.value)) return textoLimpo(tPadrao.value);
+
+  return "";
+}
+
+// =========================
+// ✅ REQUIRED DINÂMICO (evita "não envia")
+// =========================
+function setCamposFinaisVisivel(visible){
+  const box = document.getElementById("camposFinais");
+  const txt = document.getElementById("descricao");
+  if(!box || !txt) return;
+
+  box.style.display = visible ? "block" : "none";
+  txt.required = !!visible;
+  if(!visible) txt.setCustomValidity("");
+}
+
+function validarFormularioBasico(categoriaCodigo, tipoCodigo){
+  const email = document.getElementById("email");
+  const solicitante = document.getElementById("solicitante");
+  const departamento = document.getElementById("departamento");
+  const gestor = document.getElementById("gestor");
+
+  if(!textoLimpo(email.value) || !textoLimpo(solicitante.value) || !textoLimpo(departamento.value) || !textoLimpo(gestor.value)){
+    throw new Error("Preencha todos os campos obrigatórios do topo.");
+  }
+  if(!categoriaCodigo){
+    throw new Error("Selecione uma categoria (Consulta Trabalhista/Contratos/EHS).");
+  }
+  if(categoriaCodigo === "Consulta" && !tipoCodigo){
+    throw new Error("Selecione o tipo de Dúvida/Ocorrência.");
+  }
+
+  if(categoriaCodigo !== "Consulta"){
+    const desc = textoLimpo(document.getElementById("descricao")?.value || "");
+    if(!desc) throw new Error("Preencha a descrição.");
+    return;
+  }
+
+  if(tipoCodigo === "Assedio"){
+    return;
+  }
+
+  const desc = getDescricao(tipoCodigo);
+  if(!desc) throw new Error("Preencha a descrição do seu caso antes de enviar.");
+}
+
+// =========================
+// ✅ UPLOAD UI
+// =========================
+function mostrarNomeArquivos(input, spanId){
+  const texto = document.getElementById(spanId);
+  if(!texto) return;
+
+  if(!input.files || input.files.length === 0){
+    texto.innerText = "Nenhum arquivo selecionado";
+  } else if(input.files.length === 1){
+    texto.innerText = input.files[0].name;
+  } else {
+    texto.innerText = input.files.length + " arquivos selecionados";
+  }
+}
+
+// =========================
+// ✅ UPLOAD: aceita TODOS os tipos
+// =========================
+const MAX_FILE_MB = 8;
+const MAX_TOTAL_MB = 18;
+
+function bytesToMB(b){ return b / (1024 * 1024); }
+
+function listarTodosArquivosSelecionados(){
+  const inputs = Array.from(document.querySelectorAll('input[type="file"]'));
+  const files = [];
+  inputs.forEach(inp => {
+    if(inp.files && inp.files.length){
+      Array.from(inp.files).forEach(f => files.push(f));
+    }
+  });
+  return files;
+}
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Falha ao ler arquivo: " + file.name));
+    reader.onload = () => {
+      const result = String(reader.result || "");
+      const base64 = result.includes(",") ? result.split(",")[1] : "";
+      resolve({
+        name: file.name,
+        mimeType: file.type || "application/octet-stream",
+        size: file.size,
+        bytesBase64: base64
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function coletarAnexosBase64(){
+  const files = listarTodosArquivosSelecionados();
+  if(!files.length) return [];
+
+  const totalBytes = files.reduce((acc, f) => acc + f.size, 0);
+  if(bytesToMB(totalBytes) > MAX_TOTAL_MB){
+    throw new Error(`Os anexos ultrapassam o limite total de ${MAX_TOTAL_MB}MB. Reduza os arquivos e tente novamente.`);
+  }
+
+  for(const f of files){
+    if(bytesToMB(f.size) > MAX_FILE_MB){
+      throw new Error(`O arquivo "${f.name}" ultrapassa ${MAX_FILE_MB}MB. Reduza e tente novamente.`);
+    }
+  }
+
+  const anexos = [];
+  for(const f of files){
+    anexos.push(await fileToBase64(f));
+  }
+  return anexos;
+}
+
+// =========================
+// ✅ OPTCARD (categoria)
+// =========================
+document.querySelectorAll('.optcard').forEach(card=>{
+  card.addEventListener('click', function(){
+    document.querySelectorAll('.optcard').forEach(c=>c.classList.remove('selected'));
+    this.classList.add('selected');
+
+    const codigo = this.getAttribute('data-codigo') || "";
+    const consultaCampos = document.getElementById('consultaCampos');
+    const botaoEnviar = document.getElementById("botaoEnviar");
+
+    document.querySelectorAll('input[name="tipo"]').forEach(r => r.checked = false);
+    document.getElementById("subcampos").innerHTML = "";
+    setCamposFinaisVisivel(false);
+
+    if(codigo === 'Consulta'){
+      consultaCampos.style.display = 'block';
+      botaoEnviar.style.display = 'none';
+    } else {
+      consultaCampos.style.display = 'none';
+      setCamposFinaisVisivel(true);
+      botaoEnviar.style.display = 'block';
+    }
+  });
+});
+
+// =========================
+// ✅ RADIO TIPO + SUBCAMPOS
+// =========================
+document.querySelectorAll('input[name="tipo"]').forEach(radio=>{
+  radio.addEventListener("change", function(){
+    document.querySelectorAll("#radioTipo .radio-item").forEach(el=>el.classList.remove("selected"));
+    this.parentElement.classList.add("selected");
+
+    const tipoCodigo = this.value;
+
+    mostrarSubcampos(tipoCodigo);
+
+    const botaoEnviar = document.getElementById("botaoEnviar");
+
+    if(tipoCodigo === "Assedio"){
+      setCamposFinaisVisivel(false);
+      botaoEnviar.style.display = "none";
+    } else if(["Roubo","Atestado","Escala","Faltas"].includes(tipoCodigo)){
+      setCamposFinaisVisivel(false);
+      botaoEnviar.style.display = "block";
+    } else {
+      setCamposFinaisVisivel(true);
+      botaoEnviar.style.display = "block";
+    }
+  });
+});
+
+function mostrarSubcampos(tipoCodigo){
+  let html = "";
+
+  if(tipoCodigo === "Assedio"){
+    html = `
+      <div class="alert">
+        Se você passou por qualquer situação inadequada, antiética ou que vá contra as regras da empresa, utilize o Canal de Denúncias:
+        <strong>linhadeintegridade@randstad.com.br</strong>. Esse canal é seguro, confidencial e está disponível para receber informações de forma responsável, garantindo que todas as situações sejam analisadas com seriedade. Sua manifestação é fundamental para manter um ambiente ético, respeitoso e transparente para todos.
+      </div>`;
+  }
+
+  if(tipoCodigo === "Atestado"){
+    html = `
+      <div class="subgrupo">
+        <strong>Atestado</strong>
+
+        <label>Foi realizada a verificação do atestado junto a unidade de saúde? <span class="obrigatorio">*</span></label>
+        <div class="optcard-group" id="verificacaoAtestado">
+          <div class="optcard" data-value="Sim">Sim</div>
+          <div class="optcard" data-value="Nao">Não</div>
+        </div>
+
+        <div id="camposExtrasAtestado"></div>
+      </div>
+    `;
+  }
+
+  if(tipoCodigo === "Banco"){
+    html = `
+      <div class="subgrupo">
+        <strong>Selecione o assunto:</strong>
+        <div class="subgrid">
+          <label class="radio-item"><input type="radio" name="subtipo" value="Calculo"> Cálculo de horas (débito/crédito)</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Acordo"> Dúvida sobre o acordo coletivo/individual</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Rescisao"> Implicações em rescisão</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Prazo"> Prazo de compensação</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Regras"> Regras de uso/acúmulo</label>
+        </div>
+      </div>`;
+  }
+
+  if(tipoCodigo === "Escala"){
+    html = `
+      <div class="subgrupo">
+        <strong>Selecione o tipo de escala:</strong>
+        <div class="subgrid">
+          <label class="radio-item"><input type="radio" name="subtipo" value="5x2"> 5x2</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="6x1"> 6x1</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="12x36"> 12x36</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Outro"> Outro (Especifique na descrição)</label>
+        </div>
+
+        <label>Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+        <textarea id="descricaoEscala" required></textarea>
+
+        <label>Anexos</label>
+        <div class="upload-wrapper">
+          <label for="arquivoEscala" class="upload-button">Selecionar arquivos</label>
+          <span id="upload-nome-escala" class="upload-nome">Nenhum arquivo selecionado</span>
+          <input type="file" id="arquivoEscala" multiple onchange="mostrarNomeArquivos(this,'upload-nome-escala')">
+        </div>
+      </div>
+    `;
+  }
+
+  if(tipoCodigo === "Estabilidade"){
+    html = `
+      <div class="subgrupo">
+        <strong>Selecione o subtipo:</strong>
+        <div class="subgrid">
+          <label class="radio-item"><input type="radio" name="subtipo" value="Gestante"> Gestante</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Acidente"> Acidente de Trabalho/Doença Ocupacional (Afastamento)</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="CIPA"> Membro CIPA ou dirigente sindical</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="PreAposentadoria"> Pré-aposentadoria</label>
+          <label class="radio-item"><input type="radio" name="subtipo" value="Outro"> Outro (Especifique na descrição)</label>
+        </div>
+      </div>`;
+  }
+
+  if(tipoCodigo === "Faltas"){
+    html = `
+      <div class="subgrupo">
+        <strong>Faltas Injustificadas</strong>
+
+        <label>Quantos dias consecutivos de faltas injustificadas ocorreram até hoje? <span class="obrigatorio">*</span></label>
+        <textarea id="faltasDias" required></textarea>
+
+        <label>Foi enviado telegrama de convocação para retorno? Se sim, quantas tentativas? <span class="obrigatorio">*</span></label>
+        <textarea id="faltasTelegrama" required></textarea>
+
+        <label>Anexe os arquivos necessários (qualquer tipo).</label>
+        <div class="upload-wrapper">
+          <label for="arquivoFaltas" class="upload-button">Selecionar arquivo(s)</label>
+          <span id="upload-nome-faltas" class="upload-nome">Nenhum arquivo selecionado</span>
+          <input type="file" id="arquivoFaltas" multiple onchange="mostrarNomeArquivos(this,'upload-nome-faltas')">
+        </div>
+      </div>
+    `;
+  }
+
+  if(tipoCodigo === "Roubo"){
+    html = `
+      <div class="subgrupo">
+        <label>Descreva detalhadamente o ocorrido. <span class="obrigatorio">*</span></label>
+        <textarea id="descricaoRoubo" required></textarea>
+
+        <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
+        <div class="upload-wrapper">
+          <label for="arquivoRoubo" class="upload-button">Selecionar arquivos</label>
+          <span id="upload-nome-roubo" class="upload-nome">Nenhum arquivo selecionado</span>
+          <input type="file" id="arquivoRoubo" multiple required onchange="mostrarNomeArquivos(this,'upload-nome-roubo')">
+        </div>
+      </div>
+    `;
+  }
+
+  if(tipoCodigo === "Beneficios" || tipoCodigo === "PJ"){
+    html = `<div class="info">Preencha os detalhes na descrição e, se necessário, anexe documentos para análise.</div>`;
+  }
+
+  if(tipoCodigo === "Outros"){
+    html = `
+      <div class="alert">
+        <strong><span style="color:#d93025;">Atenção!</span> Evite selecionar "Outros" incorretamente.</strong><br><br>
+        Se o tema já existir na lista, sua solicitação poderá ser invalidada.
+      </div>`;
+  }
+
+  document.getElementById("subcampos").innerHTML = html;
+
+  document.querySelectorAll('#subcampos .radio-item input[type="radio"]').forEach(r => {
+    r.addEventListener("change", () => {
+      document.querySelectorAll('#subcampos .radio-item').forEach(x => x.classList.remove("selected"));
+      r.parentElement.classList.add("selected");
+    });
+  });
+
+  if(tipoCodigo === "Atestado"){
+    const optcardsAtestado = document.querySelectorAll("#verificacaoAtestado .optcard");
+    const containerExtras = document.getElementById("camposExtrasAtestado");
+
+    optcardsAtestado.forEach(card => {
+      card.addEventListener("click", function() {
+        optcardsAtestado.forEach(c => c.classList.remove("selected"));
+        this.classList.add("selected");
+        containerExtras.innerHTML = "";
+
+        if(this.getAttribute("data-value") === "Sim"){
+          containerExtras.innerHTML = `
+            <label>Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
+            <textarea id="atestadoSuspeita" required></textarea>
+
+            <label>Anexar atestado/documento <span class="obrigatorio">*</span></label>
+            <div class="upload-wrapper">
+              <label for="arquivoAtestado1" class="upload-button">Selecionar arquivo</label>
+              <span id="upload-nome-atestado1" class="upload-nome">Nenhum arquivo selecionado</span>
+              <input type="file" id="arquivoAtestado1" onchange="mostrarNomeArquivos(this,'upload-nome-atestado1')">
+            </div>
+
+            <label>Anexar retorno da unidade de saúde <span class="obrigatorio">*</span></label>
+            <div class="upload-wrapper">
+              <label for="arquivoAtestado2" class="upload-button">Selecionar arquivo</label>
+              <span id="upload-nome-atestado2" class="upload-nome">Nenhum arquivo selecionado</span>
+              <input type="file" id="arquivoAtestado2" onchange="mostrarNomeArquivos(this,'upload-nome-atestado2')">
+            </div>
+          `;
+        } else {
+          containerExtras.innerHTML = `
+            <div class="alert">
+              Recomendamos validar o atestado junto à unidade de saúde.
+            </div>`;
+        }
+      });
+    });
+  }
+}
+
+// =========================
+// ✅ SUBMIT (ENVIA PARA APPS SCRIPT)
+// =========================
+document.getElementById("form").addEventListener("submit", async function(event){
+  event.preventDefault();
+
+  const btn = document.getElementById("btnSubmit");
+  const status = document.getElementById("statusEnvio");
+
+  try{
+    btn.disabled = true;
+    status.style.display = "block";
+    status.innerText = "Enviando...";
+
+    const categoriaCodigo = getCategoriaCodigo();
+    const tipoCodigo = getTipoCodigo();
+
+    validarFormularioBasico(categoriaCodigo, tipoCodigo);
+
+    const dados = {
+      email: textoLimpo(document.getElementById("email").value),
+      solicitante: textoLimpo(document.getElementById("solicitante").value),
+      departamento: textoLimpo(document.getElementById("departamento").value),
+      gestor: textoLimpo(document.getElementById("gestor").value),
+
+      categoria: getCategoriaNome(),
+      tipoNome: getTipoNome(),
+      subtipoNome: getSubtipoNome(),
+      descricao: getDescricao(tipoCodigo),
+
+      extra1: tipoCodigo,
+      extra2: "",
+      extra3: ""
+    };
+
+    const anexos = await coletarAnexosBase64();
+    status.innerText = "Salvando...";
+
+    google.script.run
+      .withSuccessHandler(() => {
+        document.querySelector(".container form").style.display = "none";
+        document.querySelector(".description-text").style.display = "none";
+        document.getElementById("pagina-sucesso").style.display = "block";
+      })
+      .withFailureHandler((err) => {
+        btn.disabled = false;
+        status.style.display = "none";
+        alert("Erro ao enviar: " + (err?.message || err));
+      })
+      .enviarFormulario({ dados, anexos });
+
+  }catch(e){
+    btn.disabled = false;
+    status.style.display = "none";
+    alert(e.message || String(e));
+  }
+});
+</script>
+
+</body>
+</html>
+
+
+
+
