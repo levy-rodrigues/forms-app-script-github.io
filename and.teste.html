@@ -102,7 +102,7 @@
       flex-direction:column;
     }
 
-    /* ===== VISUAL PADRÃO AZUL PARA CAMPOS ===== */
+    /* ===== VISUAL PADRÃO AZUL ===== */
     .form-group input,
     .form-group select,
     .form-group textarea,
@@ -245,7 +245,7 @@
       font-size:14px;
     }
 
-    /* ===== GRID PERSONALIZADO CONTRATO ===== */
+    /* ===== GRID CONTRATO / PADRÃO EXPANDIDO ===== */
     .inline-contrato{
       display:grid;
       grid-template-columns:1fr 2fr;
@@ -450,14 +450,16 @@
         <div id="subcampos"></div>
 
         <div id="camposFinais" style="display:none;">
-          <label for="descricao">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
-          <textarea id="descricao"></textarea>
+          <div class="subgrupo">
+            <label for="descricao">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+            <textarea id="descricao"></textarea>
 
-          <label>Anexos</label>
-          <div class="upload-wrapper">
-            <label for="arquivoGeral" class="upload-button">Selecionar arquivos</label>
-            <span id="upload-nome-geral" class="upload-nome">Nenhum arquivo selecionado</span>
-            <input type="file" id="arquivoGeral" multiple onchange="mostrarNomeArquivos(this,'upload-nome-geral')">
+            <label>Anexar documentação suporte</label>
+            <div class="upload-wrapper">
+              <label for="arquivoGeral" class="upload-button">Selecionar arquivos</label>
+              <span id="upload-nome-geral" class="upload-nome">Nenhum arquivo selecionado</span>
+              <input type="file" id="arquivoGeral" multiple onchange="mostrarNomeArquivos(this,'upload-nome-geral')">
+            </div>
           </div>
         </div>
       </div>
@@ -480,11 +482,6 @@
   </div>
 
   <script>
-    /* =========================================================
-      LOGO
-      Cole aqui depois, por exemplo:
-      const LOGO_DATA_URL = "data:image/png;base64,SEU_BASE64_AQUI";
-    ========================================================= */
     const LOGO_DATA_URL = "";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -523,6 +520,10 @@
       return el ? textoLimpo(el.parentElement?.textContent || "") : "";
     }
 
+    function getRegimeNome(){
+      return document.querySelector('input[name="regimeContrato"]:checked')?.value || "";
+    }
+
     function getDescricao(tipoCodigo){
       if(tipoCodigo === "Faltas"){
         const d1 = textoLimpo(document.getElementById("faltasDias")?.value || "");
@@ -533,14 +534,16 @@
         ].filter(Boolean).join("\n");
       }
 
-      if(tipoCodigo === "ContratoTrabalho"){
-        const regime = document.querySelector('input[name="regimeContrato"]:checked')?.value || "";
+      if(["ContratoTrabalho","Banco","Atestado","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
+        const regime = textoLimpo(document.querySelector('input[name="regimeContrato"]:checked')?.value || "");
         const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
         const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
         const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
         const descricao = textoLimpo(document.getElementById("descricaoContrato")?.value || "");
+        const subtipo = getSubtipoNome();
 
         return [
+          subtipo ? `Subtipo: ${subtipo}` : "",
           regime ? `Regime: ${regime}` : "",
           matricula ? `Matrícula: ${matricula}` : "",
           nomeColaborador ? `Nome Colaborador: ${nomeColaborador}` : "",
@@ -562,9 +565,6 @@
         return textoLimpo(document.getElementById("descricaoRoubo")?.value || "");
       }
 
-      const tSub = document.querySelector("#subcampos textarea");
-      if(tSub && textoLimpo(tSub.value)) return textoLimpo(tSub.value);
-
       const tPadrao = document.getElementById("descricao");
       if(tPadrao && textoLimpo(tPadrao.value)) return textoLimpo(tPadrao.value);
 
@@ -581,6 +581,18 @@
 
       if(!visible){
         txt.setCustomValidity("");
+      }
+    }
+
+    function validarCamposPadraoExpandido(){
+      const regime = document.querySelector('input[name="regimeContrato"]:checked');
+      const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
+      const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
+      const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
+      const descricao = textoLimpo(document.getElementById("descricaoContrato")?.value || "");
+
+      if(!regime || !matricula || !nomeColaborador || !cliente || !descricao){
+        throw new Error("Preencha todos os campos obrigatórios.");
       }
     }
 
@@ -615,16 +627,70 @@
         return;
       }
 
-      if(tipoCodigo === "ContratoTrabalho"){
-        const regime = document.querySelector('input[name="regimeContrato"]:checked');
-        const matricula = textoLimpo(document.getElementById("matriculaContrato")?.value || "");
-        const nomeColaborador = textoLimpo(document.getElementById("nomeColaboradorContrato")?.value || "");
-        const cliente = textoLimpo(document.getElementById("clienteContrato")?.value || "");
-        const descricao = textoLimpo(document.getElementById("descricaoContrato")?.value || "");
+      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
+        validarCamposPadraoExpandido();
+        return;
+      }
 
-        if(!regime || !matricula || !nomeColaborador || !cliente || !descricao){
-          throw new Error("Preencha todos os campos obrigatórios de Contrato de trabalho.");
+      if(tipoCodigo === "Atestado"){
+        const verificacaoSelecionada = document.querySelector("#verificacaoAtestado .optcard.selected");
+        if(!verificacaoSelecionada){
+          throw new Error("Selecione se foi realizada a verificação do atestado junto à unidade de saúde.");
         }
+
+        const resposta = verificacaoSelecionada.getAttribute("data-value");
+
+        validarCamposPadraoExpandido();
+
+        if(resposta === "Sim"){
+          const suspeita = textoLimpo(document.getElementById("atestadoSuspeita")?.value || "");
+          const arquivo1 = document.getElementById("arquivoAtestado1");
+          const arquivo2 = document.getElementById("arquivoAtestado2");
+
+          if(!suspeita){
+            throw new Error("Preencha a suspeita do atestado.");
+          }
+
+          if(!arquivo1 || !arquivo1.files || arquivo1.files.length === 0){
+            throw new Error("Anexe a documentação suporte do atestado.");
+          }
+
+          if(!arquivo2 || !arquivo2.files || arquivo2.files.length === 0){
+            throw new Error("Anexe a documentação suporte do retorno da unidade de saúde.");
+          }
+        }
+
+        return;
+      }
+
+      if(tipoCodigo === "Escala"){
+        const subtipo = document.querySelector('input[name="subtipo"]:checked');
+        const descricaoEscala = textoLimpo(document.getElementById("descricaoEscala")?.value || "");
+        const arquivoEscala = document.getElementById("arquivoEscala");
+
+        if(!subtipo){
+          throw new Error("Selecione o tipo de escala.");
+        }
+
+        if(!descricaoEscala){
+          throw new Error("Preencha a descrição da escala.");
+        }
+
+        if(!arquivoEscala || !arquivoEscala.files || arquivoEscala.files.length === 0){
+          throw new Error("Anexe a documentação suporte.");
+        }
+
+        return;
+      }
+
+      if(tipoCodigo === "Faltas"){
+        const faltasDias = textoLimpo(document.getElementById("faltasDias")?.value || "");
+        const faltasTelegrama = textoLimpo(document.getElementById("faltasTelegrama")?.value || "");
+
+        if(!faltasDias || !faltasTelegrama){
+          throw new Error("Preencha todos os campos obrigatórios de Faltas Injustificadas.");
+        }
+
         return;
       }
 
@@ -637,8 +703,9 @@
         }
 
         if(!arquivoRoubo || !arquivoRoubo.files || arquivoRoubo.files.length === 0){
-          throw new Error("Anexe a documentação suporte de Roubo / Furto.");
+          throw new Error("Anexe a documentação suporte.");
         }
+
         return;
       }
 
@@ -721,6 +788,74 @@
       return anexos;
     }
 
+    function criarBlocoPadraoExpandido(titulo, incluirSubtipo){
+      return `
+        <div class="subgrupo">
+          <strong>${titulo}</strong>
+
+          ${incluirSubtipo ? `
+            <label>Selecione o assunto <span class="obrigatorio">*</span></label>
+            <div class="subgrid" id="subtipoContainer"></div>
+          ` : ``}
+
+          <label>Selecione o regime <span class="obrigatorio">*</span></label>
+          <div class="optcard-group" id="regimeContratoGrupo">
+            <label class="optcard">
+              <input type="radio" name="regimeContrato" value="CLT" style="display:none;">
+              CLT
+            </label>
+            <label class="optcard">
+              <input type="radio" name="regimeContrato" value="TT" style="display:none;">
+              TT
+            </label>
+          </div>
+
+          <div class="inline-contrato">
+            <div class="form-group">
+              <label for="matriculaContrato">Matrícula <span class="obrigatorio">*</span></label>
+              <input id="matriculaContrato" type="text" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nomeColaboradorContrato">Nome Colaborador <span class="obrigatorio">*</span></label>
+              <input id="nomeColaboradorContrato" type="text" required>
+            </div>
+
+            <div class="form-group linha-cheia">
+              <label for="clienteContrato">Cliente <span class="obrigatorio">*</span></label>
+              <input id="clienteContrato" type="text" required>
+            </div>
+          </div>
+
+          <label for="descricaoContrato">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+          <textarea id="descricaoContrato" required></textarea>
+
+          <label>Anexar documentação suporte</label>
+          <div class="upload-wrapper">
+            <label for="arquivoContratoTrabalho" class="upload-button">Selecionar arquivos</label>
+            <span id="upload-nome-contrato-trabalho" class="upload-nome">Nenhum arquivo selecionado</span>
+            <input type="file" id="arquivoContratoTrabalho" multiple onchange="mostrarNomeArquivos(this,'upload-nome-contrato-trabalho')">
+          </div>
+        </div>
+      `;
+    }
+
+    function preencherSubtipos(lista){
+      const container = document.getElementById("subtipoContainer");
+      if(!container) return;
+
+      container.innerHTML = lista.map(item => `
+        <label class="radio-item"><input type="radio" name="subtipo" value="${item.value}"> ${item.label}</label>
+      `).join("");
+
+      document.querySelectorAll('#subtipoContainer .radio-item input[type="radio"]').forEach(r => {
+        r.addEventListener("change", () => {
+          document.querySelectorAll('#subtipoContainer .radio-item').forEach(x => x.classList.remove("selected"));
+          r.parentElement.classList.add("selected");
+        });
+      });
+    }
+
     document.querySelectorAll('.optcard').forEach(card => {
       card.addEventListener('click', function(){
         document.querySelectorAll('.optcard').forEach(c => c.classList.remove('selected'));
@@ -773,11 +908,8 @@
         if(tipoCodigo === "Assedio"){
           setCamposFinaisVisivel(false);
           botaoEnviar.style.display = "none";
-        } else if(["Roubo", "Atestado", "Escala", "Faltas", "ContratoTrabalho"].includes(tipoCodigo)){
-          setCamposFinaisVisivel(false);
-          botaoEnviar.style.display = "block";
         } else {
-          setCamposFinaisVisivel(true);
+          setCamposFinaisVisivel(false);
           botaoEnviar.style.display = "block";
         }
       });
@@ -811,64 +943,23 @@
       }
 
       if(tipoCodigo === "Banco"){
-        html = `
-          <div class="subgrupo">
-            <strong>Selecione o assunto:</strong>
-            <div class="subgrid">
-              <label class="radio-item"><input type="radio" name="subtipo" value="Calculo"> Cálculo de horas (débito/crédito)</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Acordo"> Dúvida sobre o acordo coletivo/individual</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Rescisao"> Implicações em rescisão</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Prazo"> Prazo de compensação</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Regras"> Regras de uso/acúmulo</label>
-            </div>
-          </div>`;
+        html = criarBlocoPadraoExpandido("Banco de Horas", true);
+      }
+
+      if(tipoCodigo === "Beneficios"){
+        html = criarBlocoPadraoExpandido("Benefícios / Salários", false);
+      }
+
+      if(tipoCodigo === "Cancelamento"){
+        html = criarBlocoPadraoExpandido("Cancelamento de Admissão", false);
       }
 
       if(tipoCodigo === "ContratoTrabalho"){
-        html = `
-          <div class="subgrupo">
-            <strong>Contrato de trabalho</strong>
+        html = criarBlocoPadraoExpandido("Contrato de trabalho", false);
+      }
 
-            <label>Selecione o regime <span class="obrigatorio">*</span></label>
-            <div class="optcard-group" id="regimeContratoGrupo">
-              <label class="optcard">
-                <input type="radio" name="regimeContrato" value="CLT" style="display:none;">
-                CLT
-              </label>
-              <label class="optcard">
-                <input type="radio" name="regimeContrato" value="TT" style="display:none;">
-                TT
-              </label>
-            </div>
-
-            <div class="inline-contrato">
-              <div class="form-group">
-                <label for="matriculaContrato">Matrícula <span class="obrigatorio">*</span></label>
-                <input id="matriculaContrato" type="text" required>
-              </div>
-
-              <div class="form-group">
-                <label for="nomeColaboradorContrato">Nome Colaborador <span class="obrigatorio">*</span></label>
-                <input id="nomeColaboradorContrato" type="text" required>
-              </div>
-
-              <div class="form-group linha-cheia">
-                <label for="clienteContrato">Cliente <span class="obrigatorio">*</span></label>
-                <input id="clienteContrato" type="text" required>
-              </div>
-            </div>
-
-            <label for="descricaoContrato">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
-            <textarea id="descricaoContrato" required></textarea>
-
-            <label>Anexar documentação suporte</label>
-            <div class="upload-wrapper">
-              <label for="arquivoContratoTrabalho" class="upload-button">Selecionar arquivos</label>
-              <span id="upload-nome-contrato-trabalho" class="upload-nome">Nenhum arquivo selecionado</span>
-              <input type="file" id="arquivoContratoTrabalho" multiple onchange="mostrarNomeArquivos(this,'upload-nome-contrato-trabalho')">
-            </div>
-          </div>
-        `;
+      if(tipoCodigo === "PJ"){
+        html = criarBlocoPadraoExpandido("Contratação Modalidade PJ", false);
       }
 
       if(tipoCodigo === "Escala"){
@@ -885,7 +976,7 @@
             <label for="descricaoEscala">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
             <textarea id="descricaoEscala" required></textarea>
 
-            <label>Anexos</label>
+            <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
             <div class="upload-wrapper">
               <label for="arquivoEscala" class="upload-button">Selecionar arquivos</label>
               <span id="upload-nome-escala" class="upload-nome">Nenhum arquivo selecionado</span>
@@ -896,17 +987,7 @@
       }
 
       if(tipoCodigo === "Estabilidade"){
-        html = `
-          <div class="subgrupo">
-            <strong>Selecione o subtipo:</strong>
-            <div class="subgrid">
-              <label class="radio-item"><input type="radio" name="subtipo" value="Gestante"> Gestante</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Acidente"> Acidente de Trabalho/Doença Ocupacional (Afastamento)</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="CIPA"> Membro CIPA ou dirigente sindical</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="PreAposentadoria"> Pré-aposentadoria</label>
-              <label class="radio-item"><input type="radio" name="subtipo" value="Outro"> Outro (Especifique na descrição)</label>
-            </div>
-          </div>`;
+        html = criarBlocoPadraoExpandido("Estabilidade", true);
       }
 
       if(tipoCodigo === "Faltas"){
@@ -920,7 +1001,7 @@
             <label for="faltasTelegrama">Foi enviado telegrama de convocação para retorno? Se sim, quantas tentativas? <span class="obrigatorio">*</span></label>
             <textarea id="faltasTelegrama" required></textarea>
 
-            <label>Anexe os arquivos necessários (qualquer tipo).</label>
+            <label>Anexar documentação suporte</label>
             <div class="upload-wrapper">
               <label for="arquivoFaltas" class="upload-button">Selecionar arquivo(s)</label>
               <span id="upload-nome-faltas" class="upload-nome">Nenhum arquivo selecionado</span>
@@ -946,19 +1027,23 @@
         `;
       }
 
-      if(tipoCodigo === "Beneficios" || tipoCodigo === "PJ"){
-        html = `
-          <div class="info">
-            Preencha os detalhes na descrição e, se necessário, anexe documentos para análise.
-          </div>
-        `;
-      }
-
       if(tipoCodigo === "Outros"){
         html = `
-          <div class="alert">
-            <strong><span style="color:#d93025;">Atenção!</span> Evite selecionar "Outros" incorretamente.</strong><br><br>
-            Se o tema já existir na lista, sua solicitação poderá ser invalidada.
+          <div class="subgrupo">
+            <div class="alert">
+              <strong><span style="color:#d93025;">Atenção!</span> Evite selecionar "Outros" incorretamente.</strong><br><br>
+              Se o tema já existir na lista, sua solicitação poderá ser invalidada.
+            </div>
+
+            <label for="descricao">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+            <textarea id="descricao"></textarea>
+
+            <label>Anexar documentação suporte</label>
+            <div class="upload-wrapper">
+              <label for="arquivoGeralOutros" class="upload-button">Selecionar arquivos</label>
+              <span id="upload-nome-geral-outros" class="upload-nome">Nenhum arquivo selecionado</span>
+              <input type="file" id="arquivoGeralOutros" multiple onchange="mostrarNomeArquivos(this,'upload-nome-geral-outros')">
+            </div>
           </div>
         `;
       }
@@ -972,7 +1057,7 @@
         });
       });
 
-      if(tipoCodigo === "ContratoTrabalho"){
+      if(["ContratoTrabalho","Banco","Beneficios","Estabilidade","Cancelamento","PJ"].includes(tipoCodigo)){
         const cards = document.querySelectorAll("#regimeContratoGrupo .optcard");
         cards.forEach(card => {
           card.addEventListener("click", function(){
@@ -984,6 +1069,26 @@
         });
       }
 
+      if(tipoCodigo === "Banco"){
+        preencherSubtipos([
+          { value: "Calculo", label: "Cálculo de horas (débito/crédito)" },
+          { value: "Acordo", label: "Dúvida sobre o acordo coletivo/individual" },
+          { value: "Rescisao", label: "Implicações em rescisão" },
+          { value: "Prazo", label: "Prazo de compensação" },
+          { value: "Regras", label: "Regras de uso/acúmulo" }
+        ]);
+      }
+
+      if(tipoCodigo === "Estabilidade"){
+        preencherSubtipos([
+          { value: "Gestante", label: "Gestante" },
+          { value: "Acidente", label: "Acidente de Trabalho/Doença Ocupacional (Afastamento)" },
+          { value: "CIPA", label: "Membro CIPA ou dirigente sindical" },
+          { value: "PreAposentadoria", label: "Pré-aposentadoria" },
+          { value: "Outro", label: "Outro (Especifique na descrição)" }
+        ]);
+      }
+
       if(tipoCodigo === "Atestado"){
         const optcardsAtestado = document.querySelectorAll("#verificacaoAtestado .optcard");
         const containerExtras = document.getElementById("camposExtrasAtestado");
@@ -992,21 +1097,36 @@
           card.addEventListener("click", function() {
             optcardsAtestado.forEach(c => c.classList.remove("selected"));
             this.classList.add("selected");
-            containerExtras.innerHTML = "";
+            containerExtras.innerHTML = `
+              ${criarBlocoPadraoExpandido("Dados do colaborador", false)}
+              <div id="atestadoDetalhes"></div>
+            `;
+
+            const cards = document.querySelectorAll("#regimeContratoGrupo .optcard");
+            cards.forEach(opt => {
+              opt.addEventListener("click", function(){
+                cards.forEach(c => c.classList.remove("selected"));
+                this.classList.add("selected");
+                const radio = this.querySelector('input[type="radio"]');
+                if(radio) radio.checked = true;
+              });
+            });
+
+            const detalhes = document.getElementById("atestadoDetalhes");
 
             if(this.getAttribute("data-value") === "Sim"){
-              containerExtras.innerHTML = `
+              detalhes.innerHTML = `
                 <label for="atestadoSuspeita">Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
                 <textarea id="atestadoSuspeita" required></textarea>
 
-                <label>Anexar atestado/documento <span class="obrigatorio">*</span></label>
+                <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
                 <div class="upload-wrapper">
                   <label for="arquivoAtestado1" class="upload-button">Selecionar arquivo</label>
                   <span id="upload-nome-atestado1" class="upload-nome">Nenhum arquivo selecionado</span>
                   <input type="file" id="arquivoAtestado1" onchange="mostrarNomeArquivos(this,'upload-nome-atestado1')">
                 </div>
 
-                <label>Anexar retorno da unidade de saúde <span class="obrigatorio">*</span></label>
+                <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
                 <div class="upload-wrapper">
                   <label for="arquivoAtestado2" class="upload-button">Selecionar arquivo</label>
                   <span id="upload-nome-atestado2" class="upload-nome">Nenhum arquivo selecionado</span>
@@ -1014,7 +1134,7 @@
                 </div>
               `;
             } else {
-              containerExtras.innerHTML = `
+              detalhes.innerHTML = `
                 <div class="alert">
                   Recomendamos validar o atestado junto à unidade de saúde.
                 </div>
@@ -1051,7 +1171,7 @@
           subtipoNome: getSubtipoNome(),
           descricao: getDescricao(tipoCodigo),
           extra1: tipoCodigo,
-          extra2: "",
+          extra2: getRegimeNome(),
           extra3: ""
         };
 
