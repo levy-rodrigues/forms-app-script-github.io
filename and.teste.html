@@ -67,7 +67,7 @@
       }
     }
 
-    p.description-text {
+    p.description-text{
       font-size:14px;
       line-height:1.6;
       margin-bottom:30px;
@@ -84,6 +84,11 @@
       margin-top:12px;
     }
 
+    .obrigatorio{
+      color:#d93025;
+      font-weight:700;
+    }
+
     /* ===== CAMPOS SUPERIORES ===== */
     .form-top{
       display:grid;
@@ -97,36 +102,41 @@
       flex-direction:column;
     }
 
+    /* ===== VISUAL PADRÃO AZUL PARA CAMPOS ===== */
     .form-group input,
     .form-group select,
     .form-group textarea,
-    textarea{
+    textarea,
+    .campo-azul{
+      width:100%;
       padding:10px;
       font-size:14px;
-      border:1px solid #ccd6e0;
-      border-radius:8px;
-      background:white;
-      transition:border-color 0.3s ease, box-shadow 0.3s ease;
+      border:1.5px solid #bfd0e4;
+      border-radius:10px;
+      background:#f8fbff;
+      transition:border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
       box-sizing:border-box;
+      color:#1a1a1a;
+    }
+
+    .form-group input:hover,
+    .form-group select:hover,
+    .form-group textarea:hover,
+    textarea:hover,
+    .campo-azul:hover{
+      border-color:#7aa7e6;
+      background:#f4f9ff;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus,
-    textarea:focus{
+    textarea:focus,
+    .campo-azul:focus{
       border-color:#0046ad;
-      box-shadow:0 0 6px rgba(0, 70, 173, 0.18);
+      box-shadow:0 0 0 3px rgba(0,70,173,0.12);
+      background:#ffffff;
       outline:none;
-    }
-
-    .form-group select:hover{
-      border-color:#0046ad;
-      box-shadow:0 0 6px rgba(0, 70, 173, 0.18);
-    }
-
-    .obrigatorio{
-      color:#d93025;
-      font-weight:700;
     }
 
     /* ===== OPTCARD ===== */
@@ -139,19 +149,25 @@
     .optcard{
       flex:1;
       padding:12px;
-      border:1.5px solid #ccd6e0;
-      border-radius:8px;
+      border:1.5px solid #bfd0e4;
+      border-radius:10px;
       text-align:center;
       cursor:pointer;
       font-weight:600;
-      background:white;
+      background:#fbfdff;
       transition:0.2s;
       user-select:none;
+    }
+
+    .optcard:hover{
+      border-color:#7aa7e6;
+      background:#f4f9ff;
     }
 
     .optcard.selected{
       border-color:#0046ad;
       background:#eaf1ff;
+      box-shadow:0 0 0 2px rgba(0,70,173,0.08) inset;
     }
 
     /* ===== RADIO PRINCIPAL ===== */
@@ -168,17 +184,17 @@
       align-items:center;
       gap:10px;
       padding:12px;
-      border:1.6px solid #d9e2ec;
-      border-radius:8px;
+      border:1.5px solid #bfd0e4;
+      border-radius:10px;
       cursor:pointer;
       transition:0.2s;
-      background:white;
+      background:#fbfdff;
       font-size:14px;
     }
 
     .radio-item:hover{
-      border-color:#0046ad;
-      background:#f0f5ff;
+      border-color:#7aa7e6;
+      background:#f4f9ff;
     }
 
     .radio-item input{
@@ -188,6 +204,7 @@
       border:2px solid #0046ad;
       border-radius:50%;
       flex-shrink:0;
+      background:#fff;
     }
 
     .radio-item input:checked{
@@ -204,9 +221,9 @@
     .subgrupo{
       margin-top:18px;
       padding:18px;
-      background:#f7faff;
-      border-radius:8px;
-      border:1px solid #e3ecf5;
+      background:#f7fbff;
+      border-radius:10px;
+      border:1px solid #d8e4f2;
       animation:fadeIn 0.3s ease-in-out;
     }
 
@@ -217,7 +234,7 @@
     }
 
     .subgrid .radio-item{
-      padding:8px;
+      padding:10px;
       font-size:13px;
     }
 
@@ -228,21 +245,26 @@
       font-size:14px;
     }
 
-    /* ===== GRID 3 COLUNAS ===== */
-    .inline-3{
+    /* ===== GRID PERSONALIZADO CONTRATO ===== */
+    .inline-contrato{
       display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:15px;
+      grid-template-columns:1fr 2fr;
+      gap:15px 20px;
       margin-top:8px;
+      align-items:end;
     }
 
-    .inline-3 .form-group{
-      margin:0;
+    .linha-cheia{
+      grid-column:1 / -1;
     }
 
     @media (max-width: 800px){
-      .inline-3{
+      .inline-contrato{
         grid-template-columns:1fr;
+      }
+
+      .linha-cheia{
+        grid-column:auto;
       }
     }
 
@@ -268,13 +290,14 @@
       border-radius:6px;
       font-size:14px;
       margin-top:12px;
+      line-height:1.6;
     }
 
     /* ===== TEXTAREA ===== */
     textarea{
       width:100%;
       min-height:90px;
-      max-height:180px;
+      max-height:220px;
       margin-top:6px;
       resize:vertical;
     }
@@ -325,9 +348,9 @@
       background:#0046ad;
       color:white;
       border:none;
-      padding:10px 28px;
+      padding:12px 36px;
       font-size:14px;
-      border-radius:20px;
+      border-radius:24px;
       cursor:pointer;
       font-weight:600;
       transition:0.2s;
@@ -397,17 +420,14 @@
         </div>
       </div>
 
-      <!-- OPTCARDS -->
       <div class="optcard-group">
         <div class="optcard" data-codigo="Consulta">Consulta Trabalhista</div>
         <div class="optcard" data-codigo="Contratos">Contratos</div>
         <div class="optcard" data-codigo="EHS">EHS</div>
       </div>
 
-      <!-- Mensagem para Contratos / EHS -->
       <div id="mensagemIndisponivel" style="display:none;"></div>
 
-      <!-- Área dinâmica -->
       <div id="consultaCampos" style="display:none;">
         <div class="field-block">
           <label>Selecione o tipo de Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
@@ -429,7 +449,6 @@
 
         <div id="subcampos"></div>
 
-        <!-- Campos finais padrão -->
         <div id="camposFinais" style="display:none;">
           <label for="descricao">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
           <textarea id="descricao"></textarea>
@@ -477,9 +496,6 @@
       }
     });
 
-    // =========================
-    // HELPERS
-    // =========================
     function textoLimpo(s){
       return String(s || "").replace(/\s+/g, " ").trim();
     }
@@ -615,9 +631,11 @@
       if(tipoCodigo === "Roubo"){
         const descricaoRoubo = textoLimpo(document.getElementById("descricaoRoubo")?.value || "");
         const arquivoRoubo = document.getElementById("arquivoRoubo");
+
         if(!descricaoRoubo){
           throw new Error("Preencha a descrição do ocorrido.");
         }
+
         if(!arquivoRoubo || !arquivoRoubo.files || arquivoRoubo.files.length === 0){
           throw new Error("Anexe a documentação suporte de Roubo / Furto.");
         }
@@ -630,9 +648,6 @@
       }
     }
 
-    // =========================
-    // UPLOAD UI
-    // =========================
     function mostrarNomeArquivos(input, spanId){
       const texto = document.getElementById(spanId);
       if(!texto) return;
@@ -646,9 +661,6 @@
       }
     }
 
-    // =========================
-    // UPLOAD
-    // =========================
     const MAX_FILE_MB = 8;
     const MAX_TOTAL_MB = 18;
 
@@ -709,9 +721,6 @@
       return anexos;
     }
 
-    // =========================
-    // CATEGORIA
-    // =========================
     document.querySelectorAll('.optcard').forEach(card => {
       card.addEventListener('click', function(){
         document.querySelectorAll('.optcard').forEach(c => c.classList.remove('selected'));
@@ -751,9 +760,6 @@
       });
     });
 
-    // =========================
-    // TIPO
-    // =========================
     document.querySelectorAll('input[name="tipo"]').forEach(radio => {
       radio.addEventListener("change", function(){
         document.querySelectorAll("#radioTipo .radio-item").forEach(el => el.classList.remove("selected"));
@@ -835,7 +841,7 @@
               </label>
             </div>
 
-            <div class="inline-3">
+            <div class="inline-contrato">
               <div class="form-group">
                 <label for="matriculaContrato">Matrícula <span class="obrigatorio">*</span></label>
                 <input id="matriculaContrato" type="text" required>
@@ -846,7 +852,7 @@
                 <input id="nomeColaboradorContrato" type="text" required>
               </div>
 
-              <div class="form-group">
+              <div class="form-group linha-cheia">
                 <label for="clienteContrato">Cliente <span class="obrigatorio">*</span></label>
                 <input id="clienteContrato" type="text" required>
               </div>
@@ -876,7 +882,7 @@
               <label class="radio-item"><input type="radio" name="subtipo" value="Outro"> Outro (Especifique na descrição)</label>
             </div>
 
-            <label>Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
+            <label for="descricaoEscala">Descreva de maneira detalhada sua Dúvida/Ocorrência <span class="obrigatorio">*</span></label>
             <textarea id="descricaoEscala" required></textarea>
 
             <label>Anexos</label>
@@ -908,10 +914,10 @@
           <div class="subgrupo">
             <strong>Faltas Injustificadas</strong>
 
-            <label>Quantos dias consecutivos de faltas injustificadas ocorreram até hoje? <span class="obrigatorio">*</span></label>
+            <label for="faltasDias">Quantos dias consecutivos de faltas injustificadas ocorreram até hoje? <span class="obrigatorio">*</span></label>
             <textarea id="faltasDias" required></textarea>
 
-            <label>Foi enviado telegrama de convocação para retorno? Se sim, quantas tentativas? <span class="obrigatorio">*</span></label>
+            <label for="faltasTelegrama">Foi enviado telegrama de convocação para retorno? Se sim, quantas tentativas? <span class="obrigatorio">*</span></label>
             <textarea id="faltasTelegrama" required></textarea>
 
             <label>Anexe os arquivos necessários (qualquer tipo).</label>
@@ -927,7 +933,7 @@
       if(tipoCodigo === "Roubo"){
         html = `
           <div class="subgrupo">
-            <label>Descreva detalhadamente o ocorrido. <span class="obrigatorio">*</span></label>
+            <label for="descricaoRoubo">Descreva detalhadamente o ocorrido. <span class="obrigatorio">*</span></label>
             <textarea id="descricaoRoubo" required></textarea>
 
             <label>Anexar documentação suporte <span class="obrigatorio">*</span></label>
@@ -941,7 +947,11 @@
       }
 
       if(tipoCodigo === "Beneficios" || tipoCodigo === "PJ"){
-        html = `<div class="info">Preencha os detalhes na descrição e, se necessário, anexe documentos para análise.</div>`;
+        html = `
+          <div class="info">
+            Preencha os detalhes na descrição e, se necessário, anexe documentos para análise.
+          </div>
+        `;
       }
 
       if(tipoCodigo === "Outros"){
@@ -949,7 +959,8 @@
           <div class="alert">
             <strong><span style="color:#d93025;">Atenção!</span> Evite selecionar "Outros" incorretamente.</strong><br><br>
             Se o tema já existir na lista, sua solicitação poderá ser invalidada.
-          </div>`;
+          </div>
+        `;
       }
 
       document.getElementById("subcampos").innerHTML = html;
@@ -985,7 +996,7 @@
 
             if(this.getAttribute("data-value") === "Sim"){
               containerExtras.innerHTML = `
-                <label>Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
+                <label for="atestadoSuspeita">Qual a suspeita do atestado? <span class="obrigatorio">*</span></label>
                 <textarea id="atestadoSuspeita" required></textarea>
 
                 <label>Anexar atestado/documento <span class="obrigatorio">*</span></label>
@@ -1006,16 +1017,14 @@
               containerExtras.innerHTML = `
                 <div class="alert">
                   Recomendamos validar o atestado junto à unidade de saúde.
-                </div>`;
+                </div>
+              `;
             }
           });
         });
       }
     }
 
-    // =========================
-    // SUBMIT
-    // =========================
     document.getElementById("form").addEventListener("submit", async function(event){
       event.preventDefault();
 
