@@ -30,6 +30,13 @@ function doGet() {
 }
 
 // ------------------------------------------------------------
+// CONTROLE DE ACESSO — retorna e-mail do usuário logado
+// ------------------------------------------------------------
+function getEmail() {
+  return Session.getActiveUser().getEmail();
+}
+
+// ------------------------------------------------------------
 // DASHBOARD
 // ------------------------------------------------------------
 function getDashboard() {
@@ -114,7 +121,7 @@ function salvarParceiro(dados) {
   const headers = rows[0];
 
   // _rowIndex é 0-based (índice no array de dados, sem contar o header)
-  // Linha real na sheet = _rowIndex + 2 (linha 1 = header, dados começam na linha 2)
+  // Linha real na sheet = _rowIndex + 2 (linha 1 = header, dados a partir da linha 2)
   if (dados._rowIndex !== null && dados._rowIndex !== undefined && dados._rowIndex !== "") {
     const sheetRow = parseInt(dados._rowIndex) + 2;
     Object.entries(COLS).forEach(([, colName]) => {
@@ -128,7 +135,8 @@ function salvarParceiro(dados) {
 
   // Novo canal
   const row = headers.map(h => dados[h] || "");
-  sh.appendRow(row);
+  var lastRow = sh.getLastRow();
+sh.getRange(lastRow + 1, 1, 1, row.length).setValues([row]);
   return { ok: true };
 }
 
@@ -144,7 +152,7 @@ function excluirParceiro(rowIndex) {
   const sh = ss.getSheetByName(SHEET_CARTEIRA);
 
   // rowIndex é 0-based (índice no array de dados, sem contar o header)
-  // Linha real na sheet = rowIndex + 2 (linha 1 = header, dados começam na linha 2)
+  // Linha real na sheet = rowIndex + 2 (linha 1 = header, dados a partir da linha 2)
   const sheetRow = parseInt(rowIndex) + 2;
   const lastRow = sh.getLastRow();
 
