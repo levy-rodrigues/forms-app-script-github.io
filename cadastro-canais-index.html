@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top" />
+  <title>Formulário de Cadastro</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --primary: #141414;
+      --hover: #ff745d;
+      --text: #141414;
+      --bg: #f5f5f5;
+      --white: #fff;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Barlow", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .brand-logo {
+      max-width: 170px;
+      max-height: 60px;
+      object-fit: contain;
+      filter: invert(1);
+    }
+
+    .nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav button {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      padding: 12px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      transition: 0.2s ease;
+      color: var(--text);
+    }
+
+    .nav button i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav button .label {
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .nav button .desc {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .nav button:hover {
+      background: #fff5f3;
+      border-color: #ffd6cf;
+    }
+
+    .nav button.active {
+      background: #fff1ee;
+      border-color: #ffd0c7;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    }
+
+    .nav button.active i {
+      color: var(--hover);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Conteúdo */
+    .content {
+      padding: 28px 22px;
+    }
+
+    .page-title {
+      max-width: 900px;
+      margin: 0 auto 14px;
+    }
+
+    .page-title h2 {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .section {
+      background: var(--white);
+      border-left: 6px solid var(--hover);
+      padding: 24px;
+      border-radius: 12px;
+      margin: 0 auto 18px;
+      max-width: 900px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--hover);
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .actions {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    button.primary,
+    button.secondary {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 900;
+      transition: background 0.2s;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: var(--hover);
+    }
+
+    button.secondary {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      background: #fafafa;
+    }
+
+    .review-block {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 14px;
+      background: #fff;
+    }
+
+    .review-block h3 {
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .review-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .review-row:last-child {
+      border-bottom: none;
+    }
+
+    .review-key {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .review-value {
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .review-empty {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+
+    /* Contatos dinâmicos */
+    .add-contact {
+      margin-top: 16px;
+    }
+
+    .styled-divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .contact-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 14px;
+      background: #fff;
+    }
+
+    .contact-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .contact-card__title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+    }
+
+    .remove-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background: #fafafa;
+    }
+
+    .remove-btn i {
+      color: var(--hover);
+    }
+
+    .contacts-meta {
+      margin-top: 10px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .hint {
+      max-width: 900px;
+      margin: 8px auto 0;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    @media (max-width: 920px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+      }
+
+      .sidebar-footer {
+        position: relative;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin-top: 16px;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="https://180s.com.br/wp-content/uploads/2024/09/logo.svg" alt="Logo da empresa" class="brand-logo" />
+      </div>
+
+      <ul class="nav">
+        <li>
+          <button type="button" class="nav-btn active" data-target="sec-empresa">
+            <i class="fa-solid fa-building"></i>
+            <div>
+              <div class="label">Empresa</div>
+              <div class="desc">CNPJ e Razão Social</div>
+            </div>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="nav-btn" data-target="sec-geral">
+            <i class="fa-solid fa-user"></i>
+            <div>
+              <div class="label">Contato Geral</div>
+              <div class="desc">Principal responsável</div>
+            </div>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="nav-btn" data-target="sec-comercial">
+            <i class="fa-solid fa-briefcase"></i>
+            <div>
+              <div class="label">Comercial</div>
+              <div class="desc">Vendas / negócios</div>
+            </div>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="nav-btn" data-target="sec-tecnico">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <div>
+              <div class="label">Técnico / Operacional</div>
+              <div class="desc">Operação / suporte</div>
+            </div>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="nav-btn" data-target="sec-financeiro">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <div>
+              <div class="label">Financeiro</div>
+              <div class="desc">Cobrança e pagamentos</div>
+            </div>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="nav-btn" data-target="sec-revisao">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <div>
+              <div class="label">Revisão</div>
+              <div class="desc">Conferir antes de enviar</div>
+            </div>
+          </button>
+        </li>
+      </ul>
+
+    </aside>
+
+    <!-- conteudo -->
+    <main class="content">
+      <div class="page-title">
+        <h2>Cadastro de contatos de Parceiros</h2>
+      </div>
+
+      <!-- empresa -->
+      <section class="section active" id="sec-empresa">
+        <div class="section-title">
+          <i class="fa-solid fa-building"></i>
+          Dados da Empresa
+        </div>
+
+        <label for="cnpj">CNPJ</label>
+        <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" />
+
+        <label for="razaoSocial">Razão Social</label>
+        <input type="text" id="razaoSocial" name="razaoSocial" placeholder="Nome jurídico da empresa" />
+      </section>
+
+      <!-- contato Geral -->
+      <section class="section" id="sec-geral">
+        <div class="section-title">
+          <i class="fa-solid fa-user"></i>
+          Contato Geral
+        </div>
+
+        <!-- contato 1 (fixo) -->
+        <div class="contact-card" data-contact-fixed>
+          <div class="contact-card__header">
+            <div class="contact-card__title">
+              <i class="fa-solid fa-address-book"></i>
+              <span>Contato 1</span>
+            </div>
+          </div>
+
+          <label for="geralNome_1">Nome e Sobrenome</label>
+          <input type="text" id="geralNome_1" name="geralNome[]" />
+
+          <div class="grid-2">
+            <div>
+              <label for="geralEmail_1">E-mail</label>
+              <input type="email" id="geralEmail_1" name="geralEmail[]" />
+            </div>
+            <div>
+              <label for="geralTelefone_1">Telefone</label>
+              <input type="tel" id="geralTelefone_1" name="geralTelefone[]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Extras -->
+        <div id="geralContactsExtras"></div>
+
+        <div class="contacts-meta">
+          <span id="geralCount">1</span>/<span id="geralMax">3</span> contatos
+        </div>
+
+        <template id="geralContactTemplate">
+          <div class="contact-card" data-contact>
+            <div class="contact-card__header">
+              <div class="contact-card__title">
+                <i class="fa-solid fa-address-book"></i>
+                <span class="contact-title">Contato</span>
+              </div>
+
+              <button type="button" class="remove-btn" data-remove title="Remover contato">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+
+            <label>Nome e Sobrenome</label>
+            <input type="text" name="geralNome[]" />
+
+            <div class="grid-2">
+              <div>
+                <label>E-mail</label>
+                <input type="email" name="geralEmail[]" />
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input type="tel" name="geralTelefone[]" />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div class="add-contact">
+          <hr class="styled-divider" />
+          <button type="button" class="secondary" id="btnAddGeral">
+            <i class="fa-solid fa-plus"></i> Adicionar contato
+          </button>
+        </div>
+      </section>
+
+      <!-- contato comercial -->
+      <section class="section" id="sec-comercial">
+        <div class="section-title">
+          <i class="fa-solid fa-briefcase"></i>
+          Contato Comercial
+        </div>
+
+        <!-- contato 1 (fixo) -->
+        <div class="contact-card" data-contact-fixed>
+          <div class="contact-card__header">
+            <div class="contact-card__title">
+              <i class="fa-solid fa-address-book"></i>
+              <span>Contato 1</span>
+            </div>
+          </div>
+
+          <label for="comercialNome_1">Nome e Sobrenome</label>
+          <input type="text" id="comercialNome_1" name="comercialNome[]" />
+
+          <div class="grid-2">
+            <div>
+              <label for="comercialEmail_1">E-mail</label>
+              <input type="email" id="comercialEmail_1" name="comercialEmail[]" />
+            </div>
+            <div>
+              <label for="comercialTelefone_1">Telefone</label>
+              <input type="tel" id="comercialTelefone_1" name="comercialTelefone[]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- extras -->
+        <div id="comercialContactsExtras"></div>
+
+        <div class="contacts-meta">
+          <span id="comercialCount">1</span>/<span id="comercialMax">5</span> contatos
+        </div>
+
+        <template id="comercialContactTemplate">
+          <div class="contact-card" data-contact>
+            <div class="contact-card__header">
+              <div class="contact-card__title">
+                <i class="fa-solid fa-address-book"></i>
+                <span class="contact-title">Contato</span>
+              </div>
+
+              <button type="button" class="remove-btn" data-remove title="Remover contato">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+
+            <label>Nome e Sobrenome</label>
+            <input type="text" name="comercialNome[]" />
+
+            <div class="grid-2">
+              <div>
+                <label>E-mail</label>
+                <input type="email" name="comercialEmail[]" />
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input type="tel" name="comercialTelefone[]" />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div class="add-contact">
+          <hr class="styled-divider" />
+          <button type="button" class="secondary" id="btnAddComercial">
+            <i class="fa-solid fa-plus"></i> Adicionar contato
+          </button>
+        </div>
+      </section>
+
+      <!-- contato tecnico / operacional -->
+      <section class="section" id="sec-tecnico">
+        <div class="section-title">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          Contato Técnico / Operacional
+        </div>
+
+        <!-- contato 1 (fixo) -->
+        <div class="contact-card" data-contact-fixed>
+          <div class="contact-card__header">
+            <div class="contact-card__title">
+              <i class="fa-solid fa-address-book"></i>
+              <span>Contato 1</span>
+            </div>
+          </div>
+
+          <label for="tecnicoNome_1">Nome e Sobrenome</label>
+          <input type="text" id="tecnicoNome_1" name="tecnicoNome[]" />
+
+          <div class="grid-2">
+            <div>
+              <label for="tecnicoEmail_1">E-mail</label>
+              <input type="email" id="tecnicoEmail_1" name="tecnicoEmail[]" />
+            </div>
+            <div>
+              <label for="tecnicoTelefone_1">Telefone</label>
+              <input type="tel" id="tecnicoTelefone_1" name="tecnicoTelefone[]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- extras -->
+        <div id="tecnicoContactsExtras"></div>
+
+        <div class="contacts-meta">
+          <span id="tecnicoCount">1</span>/<span id="tecnicoMax">5</span> contatos
+        </div>
+
+        <template id="tecnicoContactTemplate">
+          <div class="contact-card" data-contact>
+            <div class="contact-card__header">
+              <div class="contact-card__title">
+                <i class="fa-solid fa-address-book"></i>
+                <span class="contact-title">Contato</span>
+              </div>
+
+              <button type="button" class="remove-btn" data-remove title="Remover contato">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+
+            <label>Nome e Sobrenome</label>
+            <input type="text" name="tecnicoNome[]" />
+
+            <div class="grid-2">
+              <div>
+                <label>E-mail</label>
+                <input type="email" name="tecnicoEmail[]" />
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input type="tel" name="tecnicoTelefone[]" />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div class="add-contact">
+          <hr class="styled-divider" />
+          <button type="button" class="secondary" id="btnAddTecnico">
+            <i class="fa-solid fa-plus"></i> Adicionar contato
+          </button>
+        </div>
+      </section>
+
+      <!-- contato financeiro -->
+      <section class="section" id="sec-financeiro">
+        <div class="section-title">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          Contato Financeiro
+        </div>
+
+        <!-- contato 1 (fixo) -->
+        <div class="contact-card" data-contact-fixed>
+          <div class="contact-card__header">
+            <div class="contact-card__title">
+              <i class="fa-solid fa-address-book"></i>
+              <span>Contato 1</span>
+            </div>
+          </div>
+
+          <label for="financeiroNome_1">Nome e Sobrenome</label>
+          <input type="text" id="financeiroNome_1" name="financeiroNome[]" />
+
+          <div class="grid-2">
+            <div>
+              <label for="financeiroEmail_1">E-mail</label>
+              <input type="email" id="financeiroEmail_1" name="financeiroEmail[]" />
+            </div>
+            <div>
+              <label for="financeiroTelefone_1">Telefone</label>
+              <input type="tel" id="financeiroTelefone_1" name="financeiroTelefone[]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- extras -->
+        <div id="financeiroContactsExtras"></div>
+
+        <div class="contacts-meta">
+          <span id="financeiroCount">1</span>/<span id="financeiroMax">5</span> contatos
+        </div>
+
+        <template id="financeiroContactTemplate">
+          <div class="contact-card" data-contact>
+            <div class="contact-card__header">
+              <div class="contact-card__title">
+                <i class="fa-solid fa-address-book"></i>
+                <span class="contact-title">Contato</span>
+              </div>
+
+              <button type="button" class="remove-btn" data-remove title="Remover contato">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+
+            <label>Nome e Sobrenome</label>
+            <input type="text" name="financeiroNome[]" />
+
+            <div class="grid-2">
+              <div>
+                <label>E-mail</label>
+                <input type="email" name="financeiroEmail[]" />
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input type="tel" name="financeiroTelefone[]" />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <div class="add-contact">
+          <hr class="styled-divider" />
+          <button type="button" class="secondary" id="btnAddFinanceiro">
+            <i class="fa-solid fa-plus"></i> Adicionar contato
+          </button>
+        </div>
+      </section>
+
+      <!-- revisao -->
+      <section class="section" id="sec-revisao">
+        <div class="section-title">
+          <i class="fa-solid fa-clipboard-check"></i>
+          Revisão
+        </div>
+
+        <div id="reviewContainer"></div>
+
+        <div class="hint">
+          Confira os dados antes de enviar. Para editar, volte na seção desejada pela sidebar.
+        </div>
+      </section>
+
+
+      <!-- acoes -->
+      <div class="actions">
+        <button type="button" class="secondary" id="btnPrev">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </button>
+
+        <button type="button" class="primary" id="btnNext">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1) nav sidebar 
+      const navButtons = Array.from(document.querySelectorAll(".nav-btn"));
+      const sections = Array.from(document.querySelectorAll(".section"));
+      const btnPrev = document.getElementById("btnPrev");
+      const btnNext = document.getElementById("btnNext");
+
+      const order = [
+        "sec-empresa",
+        "sec-geral",
+        "sec-comercial",
+        "sec-tecnico",
+        "sec-financeiro",
+        "sec-revisao",
+      ];
+
+      function setActive(id) {
+        sections.forEach((s) => s.classList.toggle("active", s.id === id));
+        navButtons.forEach((b) => b.classList.toggle("active", b.dataset.target === id));
+
+        const idx = order.indexOf(id);
+        btnPrev.disabled = idx <= 0;
+        btnPrev.style.opacity = btnPrev.disabled ? 0.6 : 1;
+        btnPrev.style.cursor = btnPrev.disabled ? "not-allowed" : "pointer";
+
+        btnNext.innerHTML =
+          idx >= order.length - 1
+            ? 'Enviar <i class="fa-solid fa-paper-plane"></i>'
+            : 'Próximo <i class="fa-solid fa-arrow-right"></i>';
+      }
+
+      navButtons.forEach((btn) => btn.addEventListener("click", () => setActive(btn.dataset.target)));
+
+      btnPrev.addEventListener("click", () => {
+        const current = order.findIndex((id) => document.getElementById(id).classList.contains("active"));
+        if (current > 0) setActive(order[current - 1]);
+      });
+
+      btnNext.addEventListener("click", () => {
+        const current = order.findIndex((id) => document.getElementById(id).classList.contains("active"));
+        if (current < order.length - 1) setActive(order[current + 1]);
+        else alert("Enviado! (substitua por sua lógica de envio)");
+      });
+
+      setActive(order[0]);
+
+      // 2) Contatos dinamicos 
+
+      function initContactManager(cfg) {
+        const extras = document.getElementById(cfg.extrasId);
+        const template = document.getElementById(cfg.templateId);
+        const btnAdd = document.getElementById(cfg.addBtnId);
+        const countEl = document.getElementById(cfg.countId);
+        const maxEl = document.getElementById(cfg.maxId);
+
+        if (!extras || !template || !btnAdd || !countEl || !maxEl) {
+          console.warn("Contact manager não inicializado (IDs faltando):", cfg);
+          return;
+        }
+
+        const MAX = typeof cfg.max === "number" ? cfg.max : 5;
+        maxEl.textContent = String(MAX);
+
+        function getTotalContacts() {
+          // 1 fixo + extras
+          return 1 + extras.querySelectorAll("[data-contact]").length;
+        }
+
+        function updateCounterAndLimit() {
+          const total = getTotalContacts();
+          countEl.textContent = String(total);
+
+          const extrasCount = total - 1;
+          const reached = extrasCount >= (MAX - 1);
+          btnAdd.disabled = reached;
+          btnAdd.style.opacity = reached ? 0.6 : 1;
+          btnAdd.style.cursor = reached ? "not-allowed" : "pointer";
+        }
+
+        function renumber() {
+          const cards = extras.querySelectorAll("[data-contact]");
+          cards.forEach((card, idx) => {
+            const title = card.querySelector(".contact-title");
+            if (title) title.textContent = `Contato ${idx + 2}`;
+          });
+          updateCounterAndLimit();
+        }
+
+        function isCardFilled(card) {
+          const inputs = Array.from(card.querySelectorAll("input, select, textarea"));
+          return inputs.some((el) => (el.value || "").trim().length > 0);
+        }
+
+        function lastExtraIsEmpty() {
+          const cards = extras.querySelectorAll("[data-contact]");
+          if (cards.length === 0) return false;
+          const last = cards[cards.length - 1];
+          return !isCardFilled(last);
+        }
+
+        function addExtraContact() {
+          // impedir adicionar se o ultimo extra estiver vazio
+          if (lastExtraIsEmpty()) {
+            alert("Preencha o último contato adicionado antes de incluir outro.");
+            return;
+          }
+
+          // limite
+          const extrasCount = extras.querySelectorAll("[data-contact]").length;
+          if (extrasCount >= (MAX - 1)) {
+            alert("Você atingiu o limite de contatos.");
+            return;
+          }
+
+          const node = template.content.cloneNode(true);
+          const card = node.querySelector("[data-contact]");
+          const removeBtn = node.querySelector("[data-remove]");
+
+          removeBtn.addEventListener("click", () => {
+            card.remove();
+            renumber();
+          });
+
+          extras.appendChild(node);
+          renumber();
+        }
+
+        btnAdd.addEventListener("click", addExtraContact);
+
+        // estado inicial (1 contato fixo)
+        updateCounterAndLimit();
+      }
+
+      initContactManager({
+        extrasId: "geralContactsExtras",
+        templateId: "geralContactTemplate",
+        addBtnId: "btnAddGeral",
+        countId: "geralCount",
+        maxId: "geralMax",
+        max: 3,
+      });
+
+      initContactManager({
+        extrasId: "comercialContactsExtras",
+        templateId: "comercialContactTemplate",
+        addBtnId: "btnAddComercial",
+        countId: "comercialCount",
+        maxId: "comercialMax",
+        max: 3,
+      });
+
+      initContactManager({
+        extrasId: "tecnicoContactsExtras",
+        templateId: "tecnicoContactTemplate",
+        addBtnId: "btnAddTecnico",
+        countId: "tecnicoCount",
+        maxId: "tecnicoMax",
+        max: 3,
+      });
+
+      initContactManager({
+        extrasId: "financeiroContactsExtras",
+        templateId: "financeiroContactTemplate",
+        addBtnId: "btnAddFinanceiro",
+        countId: "financeiroCount",
+        maxId: "financeiroMax",
+        max: 3,
+      });
+    });
+
+    function valById(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value || "").trim() : "";
+}
+
+function getContacts(prefix) {
+  const names = Array.from(document.querySelectorAll(`input[name="${prefix}Nome[]"]`));
+  const emails = Array.from(document.querySelectorAll(`input[name="${prefix}Email[]"]`));
+  const phones = Array.from(document.querySelectorAll(`input[name="${prefix}Telefone[]"]`));
+
+  const total = Math.max(names.length, emails.length, phones.length);
+  const contacts = [];
+
+  for (let i = 0; i < total; i++) {
+    const nome = (names[i]?.value || "").trim();
+    const email = (emails[i]?.value || "").trim();
+    const telefone = (phones[i]?.value || "").trim();
+
+    // ignora contato 100% vazio
+    if (!nome && !email && !telefone) continue;
+
+    contacts.push({ nome, email, telefone });
+  }
+
+  return contacts;
+}
+
+
+  </script>
+</body>
+
+</html>
