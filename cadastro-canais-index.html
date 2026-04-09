@@ -100,7 +100,8 @@
       border: none; padding: 12px 18px; border-radius: 10px;
       cursor: pointer; font-size: 15px; font-weight: 900;
       font-family: "Barlow", sans-serif; transition: background 0.2s;
-    }
+      }
+    #btnPrev { opacity: 1 !important; cursor: pointer !important; }
     button.primary { background: var(--primary); color: #fff; }
     button.primary:hover { background: var(--hover); }
     button.secondary { background: #fff; border: 1px solid var(--border); color: var(--text); }
@@ -355,7 +356,7 @@
       </section>
 
       <div class="actions">
-        <button type="button" class="secondary" id="btnPrev"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <button type="button" class="secondary" id="btnPrev" style="opacity:1;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
         <button type="button" class="primary"   id="btnNext">Próximo <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </main>
