@@ -418,9 +418,9 @@
       sections.forEach(s => s.classList.toggle("active", s.id === id));
       navButtons.forEach(b => b.classList.toggle("active", b.dataset.target === id));
       const idx = order.indexOf(id);
-      btnPrev.disabled = idx <= 0;
-      btnPrev.style.opacity = btnPrev.disabled ? 0.6 : 1;
-      btnPrev.style.cursor  = btnPrev.disabled ? "not-allowed" : "pointer";
+      btnPrev.disabled = false;
+      btnPrev.style.opacity = 1;
+      btnPrev.style.cursor  = "pointer";
       btnNext.innerHTML = idx >= order.length - 1
         ? 'Enviar <i class="fa-solid fa-paper-plane"></i>'
         : 'Próximo <i class="fa-solid fa-arrow-right"></i>';
@@ -429,7 +429,12 @@
     navButtons.forEach(btn => btn.addEventListener("click", () => setActive(btn.dataset.target)));
     btnPrev.addEventListener("click", () => {
       const cur = order.findIndex(id => document.getElementById(id).classList.contains("active"));
-      if (cur > 0) setActive(order[cur - 1]);
+      if (cur > 0) {
+        setActive(order[cur - 1]);
+      } else {
+        document.getElementById("app-screen").style.display = "none";
+        document.getElementById("welcome-screen").style.display = "flex";
+      }
     });
     btnNext.addEventListener("click", () => {
       const cur = order.findIndex(id => document.getElementById(id).classList.contains("active"));
